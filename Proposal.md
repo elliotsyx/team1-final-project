@@ -27,11 +27,11 @@ vibrant communities and environments for individuals to thrive.
 
 ### The goal of our project:
 
-·Understanding risk factors for shooting incidents in NYC
+-Understanding risk factors for shooting incidents in NYC
 
-·Visualizing the distribution of shooting outcomes in New York City
+-Visualizing the distribution of shooting outcomes in New York City
 
-·Predict the time series for the future shooting incidents in boroughs
+-Predict the time series for the future shooting incidents in boroughs
 of NYC
 
 ### The intended final products:
@@ -43,26 +43,26 @@ the future years.
 
 ### The planned analyses/visualizations/coding challenges:
 
-·various plots, such as boxplots, scatter plots, and pie charts with
+-various plots, such as boxplots, scatter plots, and pie charts with
 analysis
 
-·a visual map shows the incidents in different boroughs across NYC
+-a visual map shows the incidents in different boroughs across NYC
 
-·coding challenge: Using time series to conduct the prediction of
+-coding challenge: Using time series to conduct the prediction of
 Incident Rate( decompose
 
 ### The anticipated data sources:
 
-·ShootingIncidentData:<https://data.cityofnewyork.us/Public-Safety/NYPD-Shooting-Incident-Data-Historic-/833y-fsy8>
+- ShootingIncidentData:<https://data.cityofnewyork.us/Public-Safety/NYPD-Shooting-Incident-Data-Historic-/833y-fsy8>
 
-·PayrollDataNYC:
-<https://data.cityofnewyork.us/City-Government/Citywide-Payroll-Data-Fiscal-Year-/k397-673e>
+- PayrollDataNYC:
+  <https://data.cityofnewyork.us/City-Government/Citywide-Payroll-Data-Fiscal-Year-/k397-673e>
 
-·Unemployment Ratez:<https://fred.stlouisfed.org/series/NYUR>
+- Unemployment Ratez:<https://fred.stlouisfed.org/series/NYUR>
 
-·Bureau of Labor: <https://www.bls.gov/>
+- Bureau of Labor: <https://www.bls.gov/>
 
-### The planned Timeline
+### The planned timeline:
 
 11.8 - group meeting
 
