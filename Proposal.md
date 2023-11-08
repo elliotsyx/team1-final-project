@@ -25,12 +25,12 @@ vibrant communities and environments for individuals to thrive.
 
 ### The goal of our project:
 
--Understanding risk factors for shooting incidents in NYC
+- Understanding risk factors for shooting incidents in NYC
 
--Visualizing the distribution of shooting outcomes in New York City
+- Visualizing the distribution of shooting outcomes in New York City
 
--Predict the time series for the future shooting incidents in boroughs
-of NYC
+- Predict the time series for the future shooting incidents in boroughs
+  of NYC
 
 ### The intended final products:
 
@@ -41,13 +41,13 @@ the future years.
 
 ### The planned analyses/visualizations/coding challenges:
 
--various plots, such as boxplots, scatter plots, and pie charts with
-analysis
+- Various plots, such as boxplots, scatter plots, and pie charts with
+  analysis
 
--a visual map shows the incidents in different boroughs across NYC
+- A visual map shows the incidents in different boroughs across NYC
 
--coding challenge: Using time series to conduct the prediction of
-Incident Rate( decompose
+- Coding challenge: Using time series to conduct the prediction of
+  Incident Rate( decompose
 
 ### The anticipated data sources:
 

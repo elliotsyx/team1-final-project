@@ -13,22 +13,22 @@ Group Members: Xiaoting Tang(xt2288), Junyi Ren(jr4392),Yixiao Sun(ys3765), Sixu
 The topic of shooting incidents worldwide raises concerns about the safety and security of various communities. A specific case involving an NYU student underscores the need for increased awareness and preventive measures within educational institutions. Many schools are tasked with ensuring the safety of their students, making it essential to address and mitigate potential threats. Additionally, the safety and satisfaction of tourists and fair labor conditions for employees are key factors in maintaining the appeal of destinations like New York City. People choosing NYC as their destination are often motivated by the city's diverse opportunities, which include education, employment, and cultural experiences. Overall, the motivation to address these interconnected issues lies in the shared goal of creating safer, more vibrant communities and environments for individuals to thrive.
 
 ### The goal of our project:
--Understanding risk factors for shooting incidents in NYC
+- Understanding risk factors for shooting incidents in NYC
 
--Visualizing the distribution of shooting outcomes in New York City
+- Visualizing the distribution of shooting outcomes in New York City
 
--Predict the time series for the future shooting incidents in boroughs of NYC
+- Predict the time series for the future shooting incidents in boroughs of NYC
 
 ### The intended final products:
 
 Using data and graphs to find out the potential factors and correlations such as payroll, and unemployment rate that lead to the high shooting accident rate in the boroughs of NYC and predicts the incidents rate in the future years.
 
 ### The planned analyses/visualizations/coding challenges:
--various plots, such as boxplots, scatter plots, and pie charts with analysis
+- Various plots, such as boxplots, scatter plots, and pie charts with analysis
 
--a visual map shows the incidents in different boroughs across NYC
+- A visual map shows the incidents in different boroughs across NYC
 
--coding challenge:  Using time series to conduct the prediction of Incident Rate( decompose
+- Coding challenge:  Using time series to conduct the prediction of Incident Rate( decompose
 
 ### The anticipated data sources:
 - ShootingIncidentData:https://data.cityofnewyork.us/Public-Safety/NYPD-Shooting-Incident-Data-Historic-/833y-fsy8
