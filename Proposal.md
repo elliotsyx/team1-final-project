@@ -1,7 +1,5 @@
 Proposal
 ================
-Group Members: Xiaoting Tang(xt2288), Junyi Ren(jr4392),Yixiao
-Sun(ys3765), Sixuan Chen(sc5352), Yang Zhao(yz4717)
 2023-11-08
 
 # Project Title: Shooting Incidents in NYC
