@@ -10,14 +10,8 @@ output: github_document
 Group Members: Xiaoting Tang(xt2288), Junyi Ren(jr4392),Yixiao Sun(ys3765), Sixuan Chen(sc5352), Yang Zhao(yz4717)
 
 ### Motivation:
-Some facts about shooting incidents 
-  worldwide
-  NYU student case
-\
-  many schools → students 
-  Also tourists → employees 
-	\
-choosing NYC
+
+The topic of shooting incidents worldwide raises concerns about the safety and security of various communities. A specific case involving an NYU student underscores the need for increased awareness and preventive measures within educational institutions. Many schools are tasked with ensuring the safety of their students, making it essential to address and mitigate potential threats. Additionally, the safety and satisfaction of tourists and fair labor conditions for employees are key factors in maintaining the appeal of destinations like New York City. People choosing NYC as their destination are often motivated by the city's diverse opportunities, which include education, employment, and cultural experiences. Overall, the motivation to address these interconnected issues lies in the shared goal of creating safer, more vibrant communities and environments for individuals to thrive.
 
 ### The goal of our project:
 ·Understanding risk factors for shooting incidents in NYC
