@@ -1,0 +1,31 @@
+---
+title: "Main analysis page"
+author: "Yixiao Sun"
+date: "2023-11-20"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(tidyverse)
+library(readr)
+NYPD_Shooting_Incident_Data_Historic_20231120 <- read_csv("data/NYPD_Shooting_Incident_Data__Historic__20231120.csv")
+View(NYPD_Shooting_Incident_Data_Historic_20231120)
+
+Citywide_Payroll_Data_Fiscal_Year_20231120 <- read_csv("data/Citywide_Payroll_Data__Fiscal_Year__20231120.csv")
+View(Citywide_Payroll_Data_Fiscal_Year_20231120)
+
+NYUR <- read_csv("data/NYUR.csv")
+View(NYUR)
+
+```
+
+```{r}
+#NYPD_Shooting_Incident_Data_Historic_ <- na.omit(NYPD_Shooting_Incident_Data_Historic_)
+
+```
+
