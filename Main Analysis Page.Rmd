@@ -233,4 +233,40 @@ z_test
 
 
 
+Proportion of male in [manhattan] = Proportion of male in [queens]
+```{r}
+prop_df = 
+  NYPD_Shooting_Incident_cleaned |>
+  select(boro, vic_sex) |>
+  group_by(boro, vic_sex) |>
+  summarize(sum = n())
+
+num_brook = 
+  prop_df |>
+  filter(boro == "BROOKLYN")
+
+num_SI = 
+  prop_df |>
+  filter(boro == "STATEN ISLAND")
+
+num_brook = sum(pull(num_brook, sum))
+
+num_SI = sum(pull(num_SI, sum))
+
+num_brook_male =
+  prop_df |>
+  filter(boro == "BROOKLYN") |>
+  filter(vic_sex == "M") |>
+  pull(sum)
+
+num_SI_male =
+  prop_df |>
+  filter(boro == "STATEN ISLAND") |>
+  filter(vic_sex == "M") |>
+  pull(sum)
+
+prop.test(c(num_brook_male, num_SI_male), n = c(num_brook, num_SI))
+```
+
+
 
