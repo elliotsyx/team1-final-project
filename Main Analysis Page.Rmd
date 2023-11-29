@@ -15,6 +15,7 @@ library(readr)
 library(ggplot2)
 library(ggmap)
 library(sf)
+library(BSDA)
 ```
 
 ```{r}
@@ -25,7 +26,7 @@ View(NYPD_Shooting_Incident)
 
 # Citywide_Payroll_Data_Fiscal_Year_20231120 <- read_csv("data/Citywide_Payroll_Data__Fiscal_Year__20231120.csv")
 # View(Citywide_Payroll_Data_Fiscal_Year_20231120)
-
+# 
 NYUR <- read_csv("data/NYUR.csv")
 View(NYUR)
 
@@ -37,6 +38,13 @@ NYPD_Shooting_Incident_cleaned =
   separate(occur_date, into = c("month", "day", "year"), sep = "/") |>
   separate(occur_time, into = c("hour", "minute", "second"), sep = ":") |>
   select(-minute, -second, -loc_of_occur_desc, -loc_classfctn_desc, -location_desc)
+
+NYUR_cleaned = 
+  NYUR |>
+  janitor::clean_names() |>
+  separate(date, into = c("year", "month", "day"), sep = "-") |>
+  select(-day)
+  
 ```
 
 
@@ -150,5 +158,79 @@ ggplot() +
   coord_fixed(ratio = 1, xlim = c(lon_min, lon_max), ylim = c(lat_min, lat_max)) +
   labs(title = "Map of Manhattan with Incident Points")
 ```
+
+Statistical Analysis:
+H0: There is no differences in mean incident numbers between winter(Dec, Jan, Feb) and summer (June, July, Aug)
+H1: the mean incident numbers between winter(Dec, Jan, Feb) and summer (June, July, Aug) is different
+
+```{r}
+season = 
+  NYPD_Shooting_Incident_cleaned |>
+  group_by(month) |>
+  distinct(incident_key) |>
+  summarise(count = n()) |>
+  mutate(season = case_match(
+    month,
+    "01" ~ "winter",
+    "02" ~ "winter",
+    "03" ~ "spring",
+    "04" ~ "spring",
+    "05" ~ "spring",
+    "06" ~ "summer",
+    "07" ~ "summer",
+    "08" ~ "summer",
+    "09" ~ "fall",
+    "10" ~ "fall",
+    "11" ~ "fall",
+    "12" ~ "winter",
+  )) 
+
+season |>
+  ggplot(aes(x = season, y = count)) +
+  geom_col()
+```
+
+```{r}
+summer_winter = 
+  NYPD_Shooting_Incident_cleaned |>
+  group_by(month, year) |>
+  distinct(incident_key) |>
+  summarise(count = n()) |>
+  mutate(season = case_match(
+    month,
+    "01" ~ "winter",
+    "02" ~ "winter",
+    "03" ~ "spring",
+    "04" ~ "spring",
+    "05" ~ "spring",
+    "06" ~ "summer",
+    "07" ~ "summer",
+    "08" ~ "summer",
+    "09" ~ "fall",
+    "10" ~ "fall",
+    "11" ~ "fall",
+    "12" ~ "winter",
+  )) |>
+  select(-year) |>
+  ungroup() |>
+  filter(season %in% c("winter", "summer"))
+summer = 
+  summer_winter |>
+  filter(season == "summer") |>
+  select(count)
+winter = 
+  summer_winter |>
+  filter(season == "winter") |>
+  select(count)
+summer_winter_after = 
+  bind_cols(summer, winter) |>
+  rename(summer = count...1,
+         winter = count...2)
+
+z_test = z.test(x = summer_winter_after$summer, y = summer_winter_after$winter, sigma.x = sd(summer_winter_after$summer), sigma.y = sd(summer_winter_after$winter))
+z_test
+```
+
+
 
 

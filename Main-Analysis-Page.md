@@ -10,7 +10,7 @@ library(tidyverse)
     ## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
     ## ✔ dplyr     1.1.3     ✔ readr     2.1.4
     ## ✔ forcats   1.0.0     ✔ stringr   1.5.0
-    ## ✔ ggplot2   3.4.4     ✔ tibble    3.2.1
+    ## ✔ ggplot2   3.4.3     ✔ tibble    3.2.1
     ## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
     ## ✔ purrr     1.0.2     
     ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
@@ -36,6 +36,18 @@ library(sf)
     ## Linking to GEOS 3.11.0, GDAL 3.5.3, PROJ 9.1.0; sf_use_s2() is TRUE
 
 ``` r
+library(BSDA)
+```
+
+    ## Loading required package: lattice
+    ## 
+    ## Attaching package: 'BSDA'
+    ## 
+    ## The following object is masked from 'package:datasets':
+    ## 
+    ##     Orange
+
+``` r
 NYPD_Shooting_Incident = 
   read_csv("data/NYPD_Shooting_Incident_Data__Historic__20231120.csv") |>
   janitor::clean_names()
@@ -57,7 +69,7 @@ View(NYPD_Shooting_Incident)
 
 # Citywide_Payroll_Data_Fiscal_Year_20231120 <- read_csv("data/Citywide_Payroll_Data__Fiscal_Year__20231120.csv")
 # View(Citywide_Payroll_Data_Fiscal_Year_20231120)
-
+# 
 NYUR <- read_csv("data/NYUR.csv")
 ```
 
@@ -80,6 +92,12 @@ NYPD_Shooting_Incident_cleaned =
   separate(occur_date, into = c("month", "day", "year"), sep = "/") |>
   separate(occur_time, into = c("hour", "minute", "second"), sep = ":") |>
   select(-minute, -second, -loc_of_occur_desc, -loc_classfctn_desc, -location_desc)
+
+NYUR_cleaned = 
+  NYUR |>
+  janitor::clean_names() |>
+  separate(date, into = c("year", "month", "day"), sep = "-") |>
+  select(-day)
 ```
 
 ``` r
@@ -217,3 +235,102 @@ ggplot() +
     ## Warning: Removed 4 rows containing missing values (`geom_point()`).
 
 ![](Main-Analysis-Page_files/figure-gfm/unnamed-chunk-9-2.png)<!-- -->
+
+Statistical Analysis: H0: There is no differences in mean incident
+numbers between winter(Dec, Jan, Feb) and summer (June, July, Aug) H1:
+the mean incident numbers between winter(Dec, Jan, Feb) and summer
+(June, July, Aug) is different
+
+``` r
+season = 
+  NYPD_Shooting_Incident_cleaned |>
+  group_by(month) |>
+  distinct(incident_key) |>
+  summarise(count = n()) |>
+  mutate(season = case_match(
+    month,
+    "01" ~ "winter",
+    "02" ~ "winter",
+    "03" ~ "spring",
+    "04" ~ "spring",
+    "05" ~ "spring",
+    "06" ~ "summer",
+    "07" ~ "summer",
+    "08" ~ "summer",
+    "09" ~ "fall",
+    "10" ~ "fall",
+    "11" ~ "fall",
+    "12" ~ "winter",
+  )) 
+
+season |>
+  ggplot(aes(x = season, y = count)) +
+  geom_col()
+```
+
+![](Main-Analysis-Page_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+
+``` r
+summer_winter = 
+  NYPD_Shooting_Incident_cleaned |>
+  group_by(month, year) |>
+  distinct(incident_key) |>
+  summarise(count = n()) |>
+  mutate(season = case_match(
+    month,
+    "01" ~ "winter",
+    "02" ~ "winter",
+    "03" ~ "spring",
+    "04" ~ "spring",
+    "05" ~ "spring",
+    "06" ~ "summer",
+    "07" ~ "summer",
+    "08" ~ "summer",
+    "09" ~ "fall",
+    "10" ~ "fall",
+    "11" ~ "fall",
+    "12" ~ "winter",
+  )) |>
+  select(-year) |>
+  ungroup() |>
+  filter(season %in% c("winter", "summer"))
+```
+
+    ## `summarise()` has grouped output by 'month'. You can override using the
+    ## `.groups` argument.
+
+``` r
+summer = 
+  summer_winter |>
+  filter(season == "summer") |>
+  select(count)
+winter = 
+  summer_winter |>
+  filter(season == "winter") |>
+  select(count)
+summer_winter_after = 
+  bind_cols(summer, winter) |>
+  rename(summer = count...1,
+         winter = count...2)
+```
+
+    ## New names:
+    ## • `count` -> `count...1`
+    ## • `count` -> `count...2`
+
+``` r
+z_test = z.test(x = summer_winter_after$summer, y = summer_winter_after$winter, sigma.x = sd(summer_winter_after$summer), sigma.y = sd(summer_winter_after$winter))
+z_test
+```
+
+    ## 
+    ##  Two-sample z-Test
+    ## 
+    ## data:  summer_winter_after$summer and summer_winter_after$winter
+    ## z = 9.4566, p-value < 2.2e-16
+    ## alternative hypothesis: true difference in means is not equal to 0
+    ## 95 percent confidence interval:
+    ##  48.79243 74.30561
+    ## sample estimates:
+    ## mean of x mean of y 
+    ## 140.58824  79.03922
