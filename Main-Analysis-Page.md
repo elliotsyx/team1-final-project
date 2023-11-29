@@ -48,9 +48,10 @@ library(BSDA)
     ##     Orange
 
 ``` r
-NYPD_Shooting_Incident = 
+NYPD_Shooting_Incident_2006_2022 = 
   read_csv("data/NYPD_Shooting_Incident_Data__Historic__20231120.csv") |>
-  janitor::clean_names()
+  janitor::clean_names() |>
+  select(-lon_lat, -statistical_murder_flag)
 ```
 
     ## Rows: 27312 Columns: 21
@@ -65,39 +66,40 @@ NYPD_Shooting_Incident =
     ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
 ``` r
-View(NYPD_Shooting_Incident)
-
-# Citywide_Payroll_Data_Fiscal_Year_20231120 <- read_csv("data/Citywide_Payroll_Data__Fiscal_Year__20231120.csv")
-# View(Citywide_Payroll_Data_Fiscal_Year_20231120)
-# 
-NYUR <- read_csv("data/NYUR.csv")
+NYPD_Shooting_Incident_2023 = 
+  read_csv("data/NYPD_Shooting_Incident_Data__Year_To_Date__20231129.csv") |>
+  janitor::clean_names() |>
+  select(-new_georeferenced_column, -statistical_murder_flag)
 ```
 
-    ## Rows: 573 Columns: 2
+    ## Rows: 991 Columns: 21
     ## ── Column specification ────────────────────────────────────────────────────────
     ## Delimiter: ","
-    ## dbl  (1): NYUR
-    ## date (1): DATE
+    ## chr  (13): OCCUR_DATE, BORO, LOC_OF_OCCUR_DESC, LOC_CLASSFCTN_DESC, LOCATION...
+    ## dbl   (5): INCIDENT_KEY, PRECINCT, JURISDICTION_CODE, Latitude, Longitude
+    ## num   (2): X_COORD_CD, Y_COORD_CD
+    ## time  (1): OCCUR_TIME
     ## 
     ## ℹ Use `spec()` to retrieve the full column specification for this data.
     ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
 ``` r
-View(NYUR)
+# NYUR <- read_csv("data/NYUR.csv")
+# View(NYUR)
 ```
 
 ``` r
 NYPD_Shooting_Incident_cleaned = 
-  NYPD_Shooting_Incident |>
+  bind_rows(NYPD_Shooting_Incident_2006_2022, NYPD_Shooting_Incident_2023) |>
   separate(occur_date, into = c("month", "day", "year"), sep = "/") |>
   separate(occur_time, into = c("hour", "minute", "second"), sep = ":") |>
   select(-minute, -second, -loc_of_occur_desc, -loc_classfctn_desc, -location_desc)
 
-NYUR_cleaned = 
-  NYUR |>
-  janitor::clean_names() |>
-  separate(date, into = c("year", "month", "day"), sep = "-") |>
-  select(-day)
+# NYUR_cleaned = 
+#   NYUR |>
+#   janitor::clean_names() |>
+#   separate(date, into = c("year", "month", "day"), sep = "-") |>
+#   select(-day)
 ```
 
 ``` r
@@ -199,7 +201,7 @@ ggplot() +
   labs(title = "Map of New York City with Data Points")
 ```
 
-    ## Warning: Removed 10 rows containing missing values (`geom_point()`).
+    ## Warning: Removed 51 rows containing missing values (`geom_point()`).
 
 ![](Main-Analysis-Page_files/figure-gfm/unnamed-chunk-8-2.png)<!-- -->
 
@@ -232,7 +234,7 @@ ggplot() +
   labs(title = "Map of Manhattan with Incident Points")
 ```
 
-    ## Warning: Removed 4 rows containing missing values (`geom_point()`).
+    ## Warning: Removed 13 rows containing missing values (`geom_point()`).
 
 ![](Main-Analysis-Page_files/figure-gfm/unnamed-chunk-9-2.png)<!-- -->
 
@@ -275,6 +277,7 @@ summer_winter =
   NYPD_Shooting_Incident_cleaned |>
   group_by(month, year) |>
   distinct(incident_key) |>
+  filter(!year == 2023) |>
   summarise(count = n()) |>
   mutate(season = case_match(
     month,
@@ -334,3 +337,56 @@ z_test
     ## sample estimates:
     ## mean of x mean of y 
     ## 140.58824  79.03922
+
+Proportion of male in \[manhattan\] = Proportion of male in \[queens\]
+
+``` r
+prop_df = 
+  NYPD_Shooting_Incident_cleaned |>
+  select(boro, vic_sex) |>
+  group_by(boro, vic_sex) |>
+  summarize(sum = n())
+```
+
+    ## `summarise()` has grouped output by 'boro'. You can override using the
+    ## `.groups` argument.
+
+``` r
+num_brook = 
+  prop_df |>
+  filter(boro == "BROOKLYN")
+
+num_SI = 
+  prop_df |>
+  filter(boro == "STATEN ISLAND")
+
+num_brook = sum(pull(num_brook, sum))
+
+num_SI = sum(pull(num_SI, sum))
+
+num_brook_male =
+  prop_df |>
+  filter(boro == "BROOKLYN") |>
+  filter(vic_sex == "M") |>
+  pull(sum)
+
+num_SI_male =
+  prop_df |>
+  filter(boro == "STATEN ISLAND") |>
+  filter(vic_sex == "M") |>
+  pull(sum)
+
+prop.test(c(num_brook_male, num_SI_male), n = c(num_brook, num_SI))
+```
+
+    ## 
+    ##  2-sample test for equality of proportions with continuity correction
+    ## 
+    ## data:  c(num_brook_male, num_SI_male) out of c(num_brook, num_SI)
+    ## X-squared = 3.4568, df = 1, p-value = 0.06299
+    ## alternative hypothesis: two.sided
+    ## 95 percent confidence interval:
+    ##  -0.002741196  0.044648482
+    ## sample estimates:
+    ##    prop 1    prop 2 
+    ## 0.9024998 0.8815461
