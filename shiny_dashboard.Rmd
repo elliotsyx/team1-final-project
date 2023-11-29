@@ -14,6 +14,7 @@ library(plotly)
 library(tidyverse)
 library(viridis)
 library(shiny)
+library(dplyr)
 
 NYPD_Shooting_Incident<- read_csv("data/NYPD_Shooting_Incident_Data__Historic__20231120.csv") %>% janitor::clean_names()
 
@@ -40,7 +41,7 @@ selectInput(
   inputId = "borough_choice",
   label = h3("Selcet Borough"),
   choices = borough_vec,
-  selected = "MANHATTAN",
+  selected = c("MANHATTAN", "QUEENS", "BRONX", "BROOKLYN", "STATEN ISLAND"),
   multiple = TRUE
 )
 
@@ -58,15 +59,15 @@ selectInput(
   inputId = "victim_age",
   label = h3("Select Age Group"),
   choices = vic_age,
-  selected = "<18"
+  selected = c("<18", "18-24", "25-44", "45-64", "65+"),
+  multiple = TRUE
 )
 
-statistical_murder_flag <-
-  NYPD_Shooting_Incident_cleaned_2 %>% pull(statistical_murder_flag) %>% unique()
+statistical_murder_flag <- NYPD_Shooting_Incident_cleaned_2%>% pull(statistical_murder_flag) %>% unique()
 
 radioButtons(
   inputId = "statistical_murder_flag",
-  label = h3("Select Murder Status"),
+  label = h3("Select Victim Status"),
   choices = statistical_murder_flag
 )
 ```
@@ -83,7 +84,8 @@ renderPlotly({
     boro == input[["borough_choice"]],
     year < input[["year_range"]][2],
     year > input[["year_range"]][1],
-    vic_age_group == input[["victim_age"]]
+    vic_age_group == input[["victim_age"]],
+    statistical_murder_flag == input[["statistical_murder_flag"]]
     ) |> 
   plot_ly(x = ~lon,
           y = ~lat, 
@@ -118,7 +120,8 @@ renderPlotly({
     filter(boro == input[["borough_choice"]],
     year < input[["year_range"]][2],
     year > input[["year_range"]][1],
-    vic_age_group == input[["victim_age"]]) %>%
+    vic_age_group == input[["victim_age"]],
+    statistical_murder_flag == input[["statistical_murder_flag"]]) %>%
     mutate(boro = fct_reorder(boro, year)) %>% 
     plot_ly(y = ~year, color = ~boro, type = "box", colors = "viridis")
 })
@@ -131,7 +134,8 @@ renderPlotly({NYPD_Shooting_Incident_cleaned_2 %>%
   filter(boro == input[["borough_choice"]],
     year < input[["year_range"]][2],
     year > input[["year_range"]][1],
-    vic_age_group == input[["victim_age"]]) %>%
+    vic_age_group == input[["victim_age"]],
+    statistical_murder_flag == input[["statistical_murder_flag"]]) %>%
   count(boro) %>% 
   mutate(boro = fct_reorder(boro, n)) %>% 
   plot_ly(x = ~boro, y = ~n, color = ~boro, type = "bar", colors = "viridis")
@@ -147,7 +151,8 @@ renderPlotly({NYPD_Shooting_Incident_cleaned_2 %>%
   filter(boro == input[["borough_choice"]],
     year < input[["year_range"]][2],
     year > input[["year_range"]][1],
-    vic_age_group == input[["victim_age"]]) %>%
+    vic_age_group == input[["victim_age"]],
+    statistical_murder_flag == input[["statistical_murder_flag"]]) %>%
   plot_ly(x = ~lat, y = ~lon, color = ~year, type = "scattergeo", colors = "viridis")
 }) 
 ```
