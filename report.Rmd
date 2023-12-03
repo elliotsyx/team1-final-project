@@ -11,6 +11,7 @@ library(ggplot2)
 library(ggmap)
 library(sf)
 library(BSDA)
+library(maps)
 ```
 
 # Motivation

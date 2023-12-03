@@ -50,10 +50,13 @@ NYPD_Shooting_Incident_2006_2022 =
   janitor::clean_names() 
 ```
 
-    ## Rows: 2 Columns: 1
+    ## Rows: 27312 Columns: 21
     ## ── Column specification ────────────────────────────────────────────────────────
     ## Delimiter: ","
-    ## chr (1): version https://git-lfs.github.com/spec/v1
+    ## chr  (12): OCCUR_DATE, BORO, LOC_OF_OCCUR_DESC, LOC_CLASSFCTN_DESC, LOCATION...
+    ## dbl   (7): INCIDENT_KEY, PRECINCT, JURISDICTION_CODE, X_COORD_CD, Y_COORD_CD...
+    ## lgl   (1): STATISTICAL_MURDER_FLAG
+    ## time  (1): OCCUR_TIME
     ## 
     ## ℹ Use `spec()` to retrieve the full column specification for this data.
     ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
@@ -289,19 +292,6 @@ incidents_year =
 incidents_year
 ```
 
-    ## `geom_line()`: Each group consists of only one observation.
-    ## ℹ Do you need to adjust the group aesthetic?
-    ## `geom_line()`: Each group consists of only one observation.
-    ## ℹ Do you need to adjust the group aesthetic?
-    ## `geom_line()`: Each group consists of only one observation.
-    ## ℹ Do you need to adjust the group aesthetic?
-    ## `geom_line()`: Each group consists of only one observation.
-    ## ℹ Do you need to adjust the group aesthetic?
-    ## `geom_line()`: Each group consists of only one observation.
-    ## ℹ Do you need to adjust the group aesthetic?
-    ## `geom_line()`: Each group consists of only one observation.
-    ## ℹ Do you need to adjust the group aesthetic?
-
 ![](report_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 - The number of incidents in Bronx and Brooklyn has been maintained at a
@@ -368,7 +358,7 @@ ggplot() +
   labs(title = "Map of New York City with Data Points")
 ```
 
-    ## Warning: Removed 43 rows containing missing values (`geom_point()`).
+    ## Warning: Removed 51 rows containing missing values (`geom_point()`).
 
 ![](report_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
@@ -429,7 +419,7 @@ ggplot() +
   labs(title = "Map of Manhattan with Incident Points")
 ```
 
-    ## Warning: Removed 9 rows containing missing values (`geom_point()`).
+    ## Warning: Removed 13 rows containing missing values (`geom_point()`).
 
 ![](report_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
