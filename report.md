@@ -4,20 +4,27 @@ report
 ## Motivation
 
 The topic of shooting incidents worldwide raises concerns about the
-safety and security of various communities. A specific case involving an
-NYU student underscores the need for increased awareness and preventive
-measures within educational institutions. NYU++ Many schools are tasked
-with ensuring the safety of their students, making it essential to
-address and mitigate potential threats. Additionally, the safety and
-satisfaction of tourists and fair labor conditions for employees are key
-factors in maintaining the appeal of destinations like New York City.
-People choosing NYC as their destination are often motivated by the
-city’s diverse opportunities, which include education, employment, and
-cultural experiences. Overall, the motivation to address these
-interconnected issues lies in the shared goal of creating safer, more
-vibrant communities and environments for individuals to thrive.
+safety and security of various communities. On the afternoon of Nov. 6,
+EST, NYU Alert, the alert system of New York University, issued an
+emergency alert that a shooting had occurred in the Tandon neighborhood,
+advising people to “run if you can run, hide if you can’t run, and duel
+if you can’t hide.” This specific case involving an NYU student
+underscores the need for increased awareness and preventive measures
+within educational institutions. Many schools are tasked with ensuring
+the safety of their students, making it essential to address and
+mitigate potential threats. Additionally, the safety and satisfaction of
+tourists and fair labor conditions for employees are key factors in
+maintaining the appeal of destinations like New York City. People
+choosing NYC as their destination are often motivated by the city’s
+diverse opportunities, which include education, employment, and cultural
+experiences. Overall, the motivation to address these interconnected
+issues lies in the shared goal of creating safer, more vibrant
+communities and environments for individuals to thrive.
 
 ## Initial Questions ?
+
+1.  Are shootings affected by seasonal differences?
+2.  Do male victimization rates vary by region? 3.？
 
 ## Data sources:
 
@@ -196,3 +203,48 @@ points highlight the spatial distribution of shootings within the
 borough.
 
 ## Statistical Analysis
+
+1.  Seasonal Comparison of Shooting Incidents This statistical analysis
+    aims to investigate whether there are significant differences in the
+    mean number of shooting incidents between the winter months
+    (December, January, February) and the summer months (June, July,
+    August) in New York City.
+
+- Generated dataset `season`, visualized using bar graphs. x-axis
+  represents the season (winter, spring, summer, fall), and y-axis
+  represents the number of different shootings in each season. The bar
+  plot provides a visual representation of the distribution of shooting
+  incidents across different seasons. The largest gaps were found in the
+  summer and winter seasons, which were selected for subsequent
+  analysis.
+- Summer-Winter Incident Comparison. Null Hypothesis (H0): There is no
+  difference in mean incident numbers between summer and winter.
+  Alternative Hypothesis (H1): The mean incident numbers between summer
+  and winter are different. A two-sample z-test was conducted to compare
+  the average of summer and winter shooting incidents. z-test yielded
+  the following results: Z value: 9.4566 P-value: \< 2.2e-16 (very
+  small, indicating strong evidence against the original hypothesis)
+  Confidence interval: (48.79, 74.31) The results of the z-test for both
+  samples indicate that there is a statistically significant difference
+  between the average number of shootings in the summer and winter.
+  p-value is extremely small, providing strong evidence against the
+  original hypothesis. Means that there is a large difference between
+  the average number of shootings in the summer and winter months.
+
+2.  Proportion of Male Shooting Victims in Brooklyn vs. Staten Island.
+    This statistical analysis aims to compare the proportion of male
+    shooting victims between the boroughs of Manhattan and Queens in New
+    York City. The goal is to investigate whether there is a significant
+    difference in the proportion of male victims between these two
+    boroughs. Null Hypothesis (H0): The proportion of male shooting
+    victims in Brooklyn is equal to the proportion in Staten Island.
+    Alternative Hypothesis (H1): The proportions of male shooting
+    victims in Brooklyn and Staten Island are different. Use a
+    two-sample test for equality of proportions with continuity
+    correction to compare the proportions of male shooting victims in
+    Brooklyn and Staten Island. And the test results indicate the
+    following: X-squared Value: 3.4568 Degrees of Freedom (df): 1
+    P-Value: 0.06299 Confidence Interval: (-0.0027, 0.0446) While the
+    p-value is greater than the conventional significance level of 0.05,
+    suggesting that we do not have strong evidence against the null
+    hypothesis.
