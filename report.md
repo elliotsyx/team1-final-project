@@ -213,13 +213,10 @@ incidents_time =
   ggplot(aes(x = hour)) +
   geom_bar() +
   labs(x = "Time(hour)", y = "Incidents Numbers", title = "Incidents Distribution of Time Periods")
-```
-
-``` r
 incidents_time
 ```
 
-![](report_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](report_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 - In this plot, each bar represents a specific hour, and the height of
   the bar corresponds to the number of shooting incidents during that
@@ -252,13 +249,10 @@ victim_gender =
   theme_void() +
   scale_fill_brewer(palette = "Dark2") +
   labs(title = "Victim Gender Distribution")
-```
-
-``` r
 victim_gender 
 ```
 
-![](report_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](report_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 - The plot reveals a substantial gender difference in victimization,
   with a significantly higher number of male victims compared to female
@@ -292,7 +286,7 @@ victim_age =
 victim_age
 ```
 
-![](report_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](report_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 - The plot highlights a significant disparity in victimization among
   various age groups.Victimization is notably concentrated among young
@@ -328,7 +322,7 @@ incidents_year =
 incidents_year
 ```
 
-![](report_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](report_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 - The number of incidents in Bronx and Brooklyn has been maintained at a
   high level every year. The overall situation of Manhattan and Queens
@@ -364,7 +358,7 @@ ggplot() +
   labs(title = "Map of New York City")
 ```
 
-![](report_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+![](report_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 - The maps generated are called “New York City Maps” and effectively
   show the outlines of geographic areas with light gray fills and white
@@ -380,7 +374,7 @@ ggplot() +
   labs(title = "Map of New York City with Data Points")
 ```
 
-![](report_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+![](report_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 - The map that resulted, entitled “Map of New York City with Data
   Points,” effective combines the geographic layout of the city with the
@@ -412,7 +406,7 @@ ggplot() +
   labs(title = "Map of manhattan")
 ```
 
-![](report_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+![](report_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 - Generates the “Manhattan Map” that effectively shows the outline of
   the geographic area with a light gray fill and white border.
@@ -431,7 +425,7 @@ ggplot() +
   labs(title = "Map of Manhattan with Incident Points")
 ```
 
-![](report_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+![](report_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
 - “Manhattan Map with Event Points” effectively combines the geographic
   layout of Manhattan with the specific locations of shooting incidents.
@@ -480,7 +474,7 @@ season |>
   geom_col()
 ```
 
-![](report_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+![](report_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 
 - The largest gaps were found in the summer and winter seasons, which
   were selected for subsequent analysis.

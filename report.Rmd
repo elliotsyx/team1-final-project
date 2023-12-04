@@ -100,8 +100,6 @@ incidents_time =
   ggplot(aes(x = hour)) +
   geom_bar() +
   labs(x = "Time(hour)", y = "Incidents Numbers", title = "Incidents Distribution of Time Periods")
-```
-```{r}
 incidents_time
 ```
 
@@ -125,8 +123,6 @@ victim_gender =
   theme_void() +
   scale_fill_brewer(palette = "Dark2") +
   labs(title = "Victim Gender Distribution")
-```
-```{r}
 victim_gender 
 ```
 
