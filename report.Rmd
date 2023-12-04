@@ -15,7 +15,7 @@ library(maps)
 ```
 
 # Motivation
-The topic of shooting incidents worldwide raises concerns about the safety and security of various communities. On the afternoon of Nov. 6, EST, NYU Alert, the alert system of New York University, issued an emergency alert that a shooting had occurred in the Tandon neighborhood, advising people to "run if you can run, hide if you can't run, and duel if you can't hide." This specific case involving an NYU student underscores the need for increased awareness and preventive measures within educational institutions. Many schools are tasked with ensuring the safety of their students, making it essential to address and mitigate potential threats. 
+The topic of shooting incidents worldwide raises concerns about the safety and security of various communities. On the afternoon of Nov. 6, 2023, the alert system of New York University, issued an emergency alert that a shooting had occurred in the Tandon neighborhood, advising people to "run if you can run, hide if you can't run, and duel if you can't hide." This specific case involving an NYU student underscores the need for increased awareness and preventive measures within educational institutions. Many schools are tasked with ensuring the safety of their students, making it essential to address and mitigate potential threats. 
 
 Additionally, the safety and satisfaction of tourists and fair labor conditions for employees are key factors in maintaining the appeal of destinations like New York City. People choosing NYC as their destination are often motivated by the city's diverse opportunities, which include education, employment, and cultural experiences. Overall, the motivation to address these interconnected issues lies in the shared goal of creating safer, more vibrant communities and environments for individuals to thrive.
 
@@ -29,12 +29,12 @@ Additionally, the safety and satisfaction of tourists and fair labor conditions 
 
 ###	Shooting Incident from 2006 to 2022 dataset
 
-We choose the NYPD Shooting Incident Dataset as our main dataset in our study. This shooting incident datasets contain every shooting incident that occurred in NYC with years ranging from 2006 to 2022. Each record represents a shooting incident in NYC and includes information about the event, the location and time of occurrence. In addition, information related to suspect and victim demographics is also included. The code is read as following:
+We choose the NYPD Shooting Incident Dataset as our main dataset in our study. This shooting incident datasets contain every shooting incident that occurred in NYC with years ranging from 2006 to 2022. Each record represents a shooting incident in NYC and includes information about the event, the location and time of occurrence. In addition, information related to suspect and victim demographics is also included.
 
-```{r echo=TRUE}
+```{r include=FALSE}
 # Read shooting Incident from 2006 to 2022
 NYPD_Shooting_Incident_2006_2022 = 
-  read_csv("data/NYPD_Shooting_Incident_Data__Historic__20231120.csv") |>
+  read_csv("data/NYPD_Shooting_Incident_Data__Historic_.csv") |>
   janitor::clean_names() 
 ```
 
@@ -59,9 +59,9 @@ There are a total of 21 variables. Out of which, we consider the variables and d
 
 ### Shooting incident data for 2023
 
-* This dataset list of every shooting incident that occurred in NYC during the current calendar year. As a supplement to the primary dataset, this dataset added 2023 shooting incidents up to November.Each record represents a shooting incident in NYC and includes information about the event, the location and time of occurrence. In addition, information related to suspect and victim demographics is also included. The data is read in the following code:
+* This dataset list of every shooting incident that occurred in NYC during the current calendar year. As a supplement to the primary dataset, this dataset added 2023 shooting incidents up to September. Each record represents a shooting incident in NYC and includes information about the event, the location and time of occurrence. In addition, information related to suspect and victim demographics is also included.
 
-```{r echo=TRUE}
+```{r include=FALSE}
 # Read shooting incident data for 2023
 NYPD_Shooting_Incident_2023 = 
   read_csv("data/NYPD_Shooting_Incident_Data__Year_To_Date__20231129.csv") |>
@@ -71,21 +71,11 @@ NYPD_Shooting_Incident_2023 =
 
 * There are a total of 21 variables. Out of which, the variables and description we considered are same as the given list above.
 
-### Unemployment Rate in New York ?
-
 # Data processing
 
-### Merge the two datasets
-* We used the `bind_rows` to bind these two dataste by row, making a longer result for the whole shooting incidents happened from 2006 to 2023.
+We bind these two dataste by row, making a longer result for the whole shooting incidents happened from 2006 to 2023. Separate the year, month and day in `occur_date` into three variables. Also, Separate the hours, minutes, and seconds in "occup_time" into three variables for subsequent statistical analysis. Remove variables that will not be used in subsequent statistical analysis of the data: `minute`, `second`, `loc_of_occur_desc`, `loc_classfctn_desc`, ` location_desc`.
 
-### Adjustment of data format
-* Separate the year, month and day in `occur_date` into three variables. Also, Separate the hours, minutes, and seconds in "occup_time" into three variables for subsequent statistical analysis.
-
-### Data cleansing
-* Remove variables that will not be used in subsequent statistical analysis of the data: `minute`, `second`, `loc_of_occur_desc`, `loc_classfctn_desc`, ` location_desc`.
-
-* The dataset is cleaned and merged in the following code.
-```{r}
+```{r include=FALSE}
 NYPD_Shooting_Incident_cleaned = 
   bind_rows(NYPD_Shooting_Incident_2006_2022, NYPD_Shooting_Incident_2023) |>
   separate(occur_date, into = c("month", "day", "year"), sep = "/") |>
@@ -97,8 +87,8 @@ NYPD_Shooting_Incident_cleaned =
 
 ###  Regarding time and victimization:
 
-* Presents an analysis of the distribution of NYPD shooting incidents across different time periods. The focus is on understanding when these incidents are more likely to occur during the day. The analysis utilizes the `NYPD_Shooting_Incident_cleaned` dataset. Use the `mutate` to create a variable `hour` as a factor. Then group the dataset by the `hour` variable. Use the `ggplot` to create a bar plot illustrating the distribution of incidents across different hours. The plot is making by the following code:
-```{r}
+* Presents an analysis of the distribution of NYPD shooting incidents across different time periods. The focus is on understanding when these incidents are more likely to occur during the day. 
+```{r echo=FALSE}
 #incidents rate against the time
 incidents_time = 
   NYPD_Shooting_Incident_cleaned |>
@@ -108,15 +98,16 @@ incidents_time =
   geom_bar() +
   labs(x = "Time(hour)", y = "Incidents Numbers", title = "Incidents Distribution of Time Periods")
 ```
-```{r}
+```{r echo=FALSE}
 incidents_time
 ```
 
-* Incidents are mainly concentrated at night, with fewer occurring during the day. Incidents occur in the lowest numbers from 7-9 pm, rising gradually as the day progresses and peaking at 23:00 pm.
+* In this plot, each bar represents a specific hour, and the height of the bar corresponds to the number of shooting incidents during that hour. The x-axis represents the time (hour), and the y-axis represents the count of incidents.
+From this plot, we can find that the majority of shooting incidents occur during the night, with the highest concentration observed between 21:00 and 23:00. Incidents are notably fewer during the daytime, reaching the lowest point from 7:00 to 9:00 PM. Incident numbers gradually increase throughout the day, reaching a peak during the late-night hours.
 
 ###  Regarding gender and victimization:
-* Begin the analysisby grouping the `NYPD_Shooting_Incident_cleaned` dataset by victim gender (`vic_sex`). Use the `distinct` function  to identify  unique incidents based on the `incident_key`. Subsequently, the `summarise` function calculates the count of unique incidents for each gender. Then use the  `cumsum` function to calculate the cumulative count, and additional variables are created to determine label positions for better visualization. Finally, use the `ggplot` function  to create a polar bar plot representing the distribution of shooting incidents by victim gender.The plot is making by the following code:
-```{r}
+* This plot delves into the gender distribution of shooting victims, seeking to understand the gender disparities among individuals impacted by shooting incidents. 
+```{r echo=FALSE}
 #victim gender bar chart
 victim_gender = 
   NYPD_Shooting_Incident_cleaned |>
@@ -131,15 +122,15 @@ victim_gender =
   theme_void() +
   scale_fill_brewer(palette = "Dark2")
 ```
-```{r}
+```{r echo=FALSE}
 victim_gender 
 ```
 
-* Victimization has significant gender differences, the number of male victims is much higher than female.
+* The plot reveals a substantial gender difference in victimization, with a significantly higher number of male victims compared to female victims. It effectively conveys the gender distribution, showcasing the magnitude of victimization for each gender category.
 
 ### Regarding age and victimization:
-* The analysis begins by grouping the dataset by the variable `vic_age_group`, which represents victim age groups. The `distinct` function is then applied to obtain unique incident keys for each age group. Then use the `summarise` function to calculates the count of distinct incidents for each age group. The cumulative count and label positions are calculated using the `mutate` function to facilitate the creation of a stacked bar chart. Finally, use the `ggplot` function to create a polar bar chart, providing a visual representation of the distribution of shooting incidents across different victim age groups. The code is as following:
-```{r}
+* This plot investigates the age distribution of shooting victims, aiming to identify patterns and disparities across different age groups. 
+```{r echo=FALSE}
 #victim age bar chart
 victim_age = 
   NYPD_Shooting_Incident_cleaned |>
@@ -154,15 +145,15 @@ victim_age =
   theme_void() +
   scale_fill_brewer(palette = "Dark2")
 ```
-```{r}
+```{r echo=FALSE}
 victim_age
 ```
 
-* There is a disparity in victimization among different age groups. Victimization is concentrated among young people, especially the age between 25-44.
+* The plot highlights a significant disparity in victimization among various age groups.Victimization is notably concentrated among young people, with the age group between 25 and 44 experiencing the highest incidence of shooting incidents.
 
 ### Regarding region and victimization:
-* The dataset is grouped by both year and borough, summarizing the number of incidents for each combination. The resulting data is visualized through a line plot created with the ggplot2 package, displaying incidents over the years with separate lines for each borough. Additionally, the data is faceted by borough for a more detailed view. The code is as following:
-```{r}
+* This plot examines the trends in shooting incidents over the years, with a focus on different boroughs in New York City. The analysis employs a line chart to visually represent the number of incidents in each borough across multiple years.
+```{r echo=FALSE}
 #incidents vs. year, seperated by borough
 incidents_year = 
   NYPD_Shooting_Incident_cleaned |>
@@ -177,7 +168,7 @@ incidents_year =
     y = "Incidents"
   )
 ```
-```{r}
+```{r echo=FALSE}
 incidents_year
 ```
 
@@ -186,8 +177,8 @@ incidents_year
 # Mapping
 
 ### Mapping New York City
-* To provide a more detailed and focused view of New York City, specific geographic limits were defined. The longitude and latitude boundaries were set as follows: Longitude: -74.3 to -73.7; Latitude: 40.5 to 40.9. These limits were chosen to encompass the central area of New York City, ensuring that the map primarily highlights the city itself. Use the `geom_polygon` function to plot the geographical polygons, with each polygon representing a different region within the state of New York. The code is as following:
-```{r}
+* To provide a more detailed and focused view of New York City, specific geographic limits were defined. The longitude and latitude boundaries were set as follows: Longitude: -74.3 to -73.7; Latitude: 40.5 to 40.9. These limits were chosen to encompass the central area of New York City, ensuring that the map primarily highlights the city itself. 
+```{r echo=FALSE}
 # map
 new_york_map <- map_data("state", region = "new york")
 
@@ -206,8 +197,7 @@ ggplot() +
 * The maps generated are called "New York City Maps" and effectively show the outlines of geographic areas with light gray fills and white borders.
 
 ### Mapping New York City with NYPD Shooting Incident Data
-* Use `map_data` to obtain geographic data for the state of New York, focusing on the New York region.Use the `new_york_map` as base map data. The NYPD Shooting Incident dataset ( `NYPD_Shooting_Incident_cleaned`) was used to identify and plot the location of specific incidents on a map. The latitude and longitude coordinates in this dataset are used to map the shooting incident data. The `geom_polygon` function is used to draw a geographic polygon of New York City with a light gray fill and white border. Use the `geom_point` function to overlay yellow data points representing the location of the shooting event. The code is as following:
-```{r}
+```{r echo=FALSE, warning=FALSE}
 ggplot() +
   geom_polygon(data = new_york_map, aes(x = long, y = lat, group = group), fill = "lightgray", color = "white") +
   geom_point(data = NYPD_Shooting_Incident_cleaned, aes(x = longitude, y = latitude), color = "yellow") +
@@ -218,8 +208,8 @@ ggplot() +
 * The map that resulted, entitled "Map of New York City with Data Points," effective combines the geographic layout of the city with the specific locations of the shootings. The light gray background provides context for the map, while the yellow data points highlight the spatial distribution of shootings in New York City.
 
 ###  Mapping Manhattan
-* In order to provide a detailed and centralized view of Manhattan, the map defines specific geographic constraints. The longitude and latitude boundaries are set as follows: Longitude: -74.0479 to -73.79067; Latitude: 40.6829 to 40.8820. These boundaries cover all of Manhattan, ensuring that the map primarily highlights the borough itself. Use the `geom_polygon` function to draw a geographic polygon of Manhattan with a light gray fill and white border. The code is as following:
-```{r}
+* In order to provide a detailed and centralized view of Manhattan, the map defines specific geographic constraints. The longitude and latitude boundaries are set as follows: Longitude: -74.0479 to -73.79067; Latitude: 40.6829 to 40.8820. These boundaries cover all of Manhattan, ensuring that the map primarily highlights the borough itself. 
+```{r echo=FALSE}
 # map for Manhattan
 manhattan_map <- map_data("state", region = "new york")
 
@@ -237,8 +227,7 @@ ggplot() +
 * Generates the "Manhattan Map" that effectively shows the outline of the geographic area with a light gray fill and white border.
 
 ### Mapping Manhattan with NYPD Shooting Incident Data
-* Use the `geom_polygon` function to draw a geographic polygon of Manhattan with a light gray fill and white border. In addition, yellow data points representing the locations of shootings within Manhattan were overlaid using the `geom_point` function. The code is as following:
-```{r}
+```{r echo=FALSE, warning=FALSE}
 manhattan = 
   NYPD_Shooting_Incident_cleaned |>
   filter(boro == "MANHATTAN")
@@ -257,8 +246,8 @@ ggplot() +
 ### Seasonal Comparison of Shooting Incidents
 
 * This statistical analysis aims to investigate whether there are significant differences in the mean number of shooting incidents between the winter months (December, January, February) and the summer months (June, July, August) in New York City. 
-* Generated dataset `season`, visualized using bar graphs. x-axis represents the season (winter, spring, summer, fall), and y-axis represents the number of different shootings in each season. The bar plot provides a visual representation of the distribution of shooting incidents across different seasons. The following code is used to generate and make a plot of `season`:
-```{r}
+* Generated dataset `season`, visualized using bar graphs. x-axis represents the season (winter, spring, summer, fall), and y-axis represents the number of different shootings in each season. The bar plot provides a visual representation of the distribution of shooting incidents across different seasons. 
+```{r echo=FALSE}
 season = 
   NYPD_Shooting_Incident_cleaned |>
   group_by(month) |>
@@ -285,8 +274,9 @@ season |>
   geom_col()
 ```
 
-* The largest gaps were found in the summer and winter seasons, which were selected for subsequent analysis. The following code is used to filter and clean the data for summer and winter:
-```{r}
+* The largest gaps were found in the summer and winter seasons, which were selected for subsequent analysis.
+
+```{r echo=FALSE}
 summer_winter = 
   NYPD_Shooting_Incident_cleaned |>
   group_by(month, year) |>
@@ -312,7 +302,7 @@ summer_winter =
   ungroup() |>
   filter(season %in% c("winter", "summer"))
 ```
-```{r}
+```{r echo=FALSE}
 summer = 
   summer_winter |>
   filter(season == "summer") |>
@@ -330,13 +320,10 @@ summer_winter_after =
 
 * Summer-Winter Incident Comparison.
 
-Null Hypothesis (H0): There is no difference in mean incident numbers between summer and winter.
-
-Alternative Hypothesis (H1): The mean incident numbers between summer and winter are different.
-
-A two-sample z-test was conducted to compare the average of summer and winter shooting incidents. The code for the z.test is as follow:
-```{r}
-
+Null Hypothesis (H0): There is no difference in mean incident numbers between summer and winter. Alternative Hypothesis (H1): The mean incident numbers between summer and winter are different. A two-sample z-test was conducted to compare the average of summer and winter shooting incidents. 
+```{r echo=FALSE}
+z_test = z.test(x = summer_winter_after$summer, y = summer_winter_after$winter, sigma.x = sd(summer_winter_after$summer), sigma.y = sd(summer_winter_after$winter))
+z_test
 ```
 
 * z-test yielded the following results:
