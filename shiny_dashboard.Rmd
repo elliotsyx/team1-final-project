@@ -2,6 +2,7 @@
 title: "Shiny Dashboard"
 output: 
   flexdashboard::flex_dashboard:
+    theme: darkly
     orientation: columns
     vertical_layout: fill
 runtime: shiny
@@ -9,12 +10,15 @@ runtime: shiny
 
 ```{r setup, include=FALSE}
 library(flexdashboard)
-library(flexdashboard)
 library(plotly)
 library(tidyverse)
 library(viridis)
 library(shiny)
 library(dplyr)
+library(shiny)
+library(shinythemes)
+
+
 
 NYPD_Shooting_Incident<- read_csv("data/NYPD_Shooting_Incident_Data__Historic__20231120.csv") %>% janitor::clean_names()
 
@@ -27,7 +31,9 @@ NYPD_Shooting_Incident_cleaned =
 NYPD_Shooting_Incident_cleaned_2 <- 
   NYPD_Shooting_Incident_cleaned %>% 
   rename(lat = latitude, lon = longitude) %>%
-  select(boro, lat, lon,statistical_murder_flag,year,vic_age_group)
+  select(boro, lat, lon,statistical_murder_flag,year,vic_age_group)%>%
+  filter(!vic_age_group == "UNKNOWN")%>%
+  filter(!vic_age_group == "1022")
 ```
 
 Column {.sidebar}
