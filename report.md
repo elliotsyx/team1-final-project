@@ -1,70 +1,644 @@
 report
 ================
 
-## Motivation
+``` r
+#library
+library(tidyverse)
+```
+
+    ## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+    ## ✔ dplyr     1.1.3     ✔ readr     2.1.4
+    ## ✔ forcats   1.0.0     ✔ stringr   1.5.0
+    ## ✔ ggplot2   3.4.3     ✔ tibble    3.2.1
+    ## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+    ## ✔ purrr     1.0.2     
+    ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ✖ dplyr::filter() masks stats::filter()
+    ## ✖ dplyr::lag()    masks stats::lag()
+    ## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+
+``` r
+library(readr)
+library(ggplot2)
+library(ggmap)
+```
+
+    ## ℹ Google's Terms of Service: <https://mapsplatform.google.com>
+    ##   Stadia Maps' Terms of Service: <https://stadiamaps.com/terms-of-service/>
+    ##   OpenStreetMap's Tile Usage Policy: <https://operations.osmfoundation.org/policies/tiles/>
+    ## ℹ Please cite ggmap if you use it! Use `citation("ggmap")` for details.
+
+``` r
+library(sf)
+```
+
+    ## Linking to GEOS 3.11.0, GDAL 3.5.3, PROJ 9.1.0; sf_use_s2() is TRUE
+
+``` r
+library(BSDA)
+```
+
+    ## Loading required package: lattice
+    ## 
+    ## Attaching package: 'BSDA'
+    ## 
+    ## The following object is masked from 'package:datasets':
+    ## 
+    ##     Orange
+
+``` r
+library(maps)
+```
+
+    ## 
+    ## Attaching package: 'maps'
+    ## 
+    ## The following object is masked from 'package:purrr':
+    ## 
+    ##     map
+
+# Motivation
 
 The topic of shooting incidents worldwide raises concerns about the
-safety and security of various communities. A specific case involving an
-NYU student underscores the need for increased awareness and preventive
-measures within educational institutions. Many schools are tasked with
-ensuring the safety of their students, making it essential to address
-and mitigate potential threats. Additionally, the safety and
-satisfaction of tourists and fair labor conditions for employees are key
-factors in maintaining the appeal of destinations like New York City.
-People choosing NYC as their destination are often motivated by the
-city’s diverse opportunities, which include education, employment, and
-cultural experiences. Overall, the motivation to address these
-interconnected issues lies in the shared goal of creating safer, more
-vibrant communities and environments for individuals to thrive.
+safety and security of various communities. On the afternoon of Nov. 6,
+2023, the alert system of New York University, issued an emergency alert
+that a shooting had occurred in the Tandon neighborhood, advising people
+to “run if you can run, hide if you can’t run, and duel if you can’t
+hide.” This specific case involving an NYU student underscores the need
+for increased awareness and preventive measures within educational
+institutions. Many schools are tasked with ensuring the safety of their
+students, making it essential to address and mitigate potential threats.
 
-## Questions
+Additionally, the safety and satisfaction of tourists and fair labor
+conditions for employees are key factors in maintaining the appeal of
+destinations like New York City. People choosing NYC as their
+destination are often motivated by the city’s diverse opportunities,
+which include education, employment, and cultural experiences. Overall,
+the motivation to address these interconnected issues lies in the shared
+goal of creating safer, more vibrant communities and environments for
+individuals to thrive.
 
-## Data sources:
+# Initial Questions ?
 
-1.  Shooting Incident dataset We choose the NYPD Shooting Incident
-    Dataset as our main dataset in our study. Shooting incident datasets
-    contain every shooting incident that occurred in NYC with years
-    ranging from 2006 to 2022. There are a total of 21 variables. Out of
-    which, we consider the variables and description is listed below:
-    INCIDENT_KEY: Randomly generated persistent ID for each arrest.
-    OCCUR_DATE: Exact date of the shooting incident. OCCUR_TIME: Exact
-    time of the shooting incident. BORO: Borough where the shooting
-    incident occurred. PRECINCT: Precinct where the shooting incident
-    occurred. JURISDICTION_CODE: Jurisdiction where the shooting
-    incident occurred. Jurisdiction codes 0(Patrol), 1(Transit) and
-    2(Housing) represent NYPD whilst codes 3 and more represent non NYPD
-    jurisdictions. STATISTICAL_MURDER_FLAG: Shooting resulted in the
-    victim’s death which would be counted as a murder. PERP_AGE_GROUP:
-    Perpetrator’s age within a category. PERP_SEX: Perpetrator’s sex
-    description. PERP_RACE: Perpetrator’s race description.
-    VIC_AGE_GROUP: Victim’s age within a category. VIC_SEX: Victim’s sex
-    description. VIC_RACE: Victim’s race description. X_COORD_CD:
-    Midblock X-coordinate for New York State Plane Coordinate System,
-    Long Island Zone, NAD 83, units feet (FIPS 3104). Y_COORD_CD:
-    Midblock Y-coordinate for New York State Plane Coordinate System,
-    Long Island Zone, NAD 83, units feet (FIPS 3104). Latitude: Latitude
-    coordinate for Global Coordinate System, WGS 1984, decimal degrees
-    (EPSG 4326). Longitude: Longitude coordinate for Global Coordinate
-    System, WGS 1984, decimal degrees (EPSG 4326). Lon_Lat: Longitude
-    and Latitude Coordinates for mapping.
-2.  Unemployment Rate in New York ?
+- 1.  Are shootings affected by seasonal differences?
 
-## Data cleaning
+- 2.  Do male victimization rates vary by region?
 
-## plot
+- 3.  ？
 
-1.  Regarding time and victimization: Incidents are mainly concentrated
-    at night, with fewer occurring during the day. Incidents occur in
-    the lowest numbers from 7-9 pm, rising gradually as the day
-    progresses and peaking at 23:00 pm.
-2.  Regarding gender and victimization: Victimization has significant
-    gender differences, the number of male victims is much higher than
-    female.
-3.  Regarding age and victimization: There is a disparity in
-    victimization among different age groups. Victimization is
-    concentrated among young people, especially the age between 25-44.
-4.  ?Regarding region and victimization: How was the incident amount
-    changed in different boroughs from 2006-2022? How cases are
-    distributed in the New York City？
+# Data sources:
 
-## Statistical Analysis
+### Shooting Incident from 2006 to 2022 dataset
+
+We choose the NYPD Shooting Incident Dataset as our main dataset in our
+study. This shooting incident datasets contain every shooting incident
+that occurred in NYC with years ranging from 2006 to 2022. Each record
+represents a shooting incident in NYC and includes information about the
+event, the location and time of occurrence. In addition, information
+related to suspect and victim demographics is also included.
+
+``` r
+# Read shooting Incident from 2006 to 2022
+NYPD_Shooting_Incident_2006_2022 = 
+  read_csv("data/NYPD_Shooting_Incident_Data__Historic_.csv") |>
+  janitor::clean_names() 
+```
+
+    ## Rows: 27312 Columns: 21
+    ## ── Column specification ────────────────────────────────────────────────────────
+    ## Delimiter: ","
+    ## chr  (12): OCCUR_DATE, BORO, LOC_OF_OCCUR_DESC, LOC_CLASSFCTN_DESC, LOCATION...
+    ## dbl   (7): INCIDENT_KEY, PRECINCT, JURISDICTION_CODE, X_COORD_CD, Y_COORD_CD...
+    ## lgl   (1): STATISTICAL_MURDER_FLAG
+    ## time  (1): OCCUR_TIME
+    ## 
+    ## ℹ Use `spec()` to retrieve the full column specification for this data.
+    ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+There are a total of 21 variables.
+
+- `INCIDENT_KEY`: Randomly generated persistent ID for each arrest.
+- `OCCUR_DATE`: Exact date of the shooting incident.
+- `OCCUR_TIME`: Exact time of the shooting incident.
+- `BORO`: Borough where the shooting incident occurred.
+- `LOC_OF_OCCUR_DESC` :Location of the shooting incident(OUTSIDE,
+  INSIDE)
+- `PRECINCT`: Precinct where the shooting incident occurred.
+- `JURISDICTION_CODE`: Jurisdiction where the shooting incident
+  occurred. Jurisdiction codes 0(Patrol), 1(Transit) and 2(Housing)
+  represent NYPD whilst codes 3 and more represent non NYPD
+  jurisdictions.
+- `LOC_CLASSFCTN_DESC`: Location of the shooting incident(STREET,
+  HOUSING, COMMERCIAL, DWELLING, OTHER)
+- `PERP_AGE_GROUP`: Perpetrator’s age within a category.
+- `PERP_SEX`: Perpetrator’s sex description.
+- `PERP_RACE`: Perpetrator’s race description.
+- `VIC_AGE_GROUP`: Victim’s age within a category.
+- `VIC_SEX`: Victim’s sex description.
+- `VIC_RACE`: Victim’s race description.
+- `X_COORD_CD`: Midblock X-coordinate for New York State Plane
+  Coordinate System, Long Island Zone, NAD 83, units feet (FIPS 3104).
+- `Y_COORD_CD`: Midblock Y-coordinate for New York State Plane
+  Coordinate System, Long Island Zone, NAD 83, units feet (FIPS 3104).
+- `Latitude`: Latitude coordinate for Global Coordinate System, WGS
+  1984, decimal degrees (EPSG 4326).
+- `Longitude`: Longitude coordinate for Global Coordinate System, WGS
+  1984, decimal degrees (EPSG 4326).
+- `Lon_Lat`: Longitude and Latitude Coordinates for mapping.
+
+### Shooting incident data for 2023
+
+- This dataset list of every shooting incident that occurred in NYC
+  during the current calendar year. As a supplement to the primary
+  dataset, this dataset added 2023 shooting incidents up to September.
+  Each record represents a shooting incident in NYC and includes
+  information about the event, the location and time of occurrence. In
+  addition, information related to suspect and victim demographics is
+  also included.
+
+``` r
+# Read shooting incident data for 2023
+NYPD_Shooting_Incident_2023 = 
+  read_csv("data/NYPD_Shooting_Incident_Data__Year_To_Date__20231129.csv") |>
+  janitor::clean_names() |>
+  select(-new_georeferenced_column, -statistical_murder_flag)
+```
+
+    ## Rows: 991 Columns: 21
+    ## ── Column specification ────────────────────────────────────────────────────────
+    ## Delimiter: ","
+    ## chr  (13): OCCUR_DATE, BORO, LOC_OF_OCCUR_DESC, LOC_CLASSFCTN_DESC, LOCATION...
+    ## dbl   (5): INCIDENT_KEY, PRECINCT, JURISDICTION_CODE, Latitude, Longitude
+    ## num   (2): X_COORD_CD, Y_COORD_CD
+    ## time  (1): OCCUR_TIME
+    ## 
+    ## ℹ Use `spec()` to retrieve the full column specification for this data.
+    ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+- There are a total of 21 variables. Out of which, the variables and
+  description we considered are same as the given list above.
+
+# Data processing
+
+We bind these two dataste by row, making a longer result for the whole
+shooting incidents happened from 2006 to 2023. Separate the year, month
+and day in `occur_date` into three variables. Also, Separate the hours,
+minutes, and seconds in “occup_time” into three variables for subsequent
+statistical analysis. Remove variables that will not be used in
+subsequent statistical analysis of the data: `minute`, `second`,
+`loc_of_occur_desc`, `loc_classfctn_desc`, `location_desc`.
+
+``` r
+NYPD_Shooting_Incident_cleaned = 
+  bind_rows(NYPD_Shooting_Incident_2006_2022, NYPD_Shooting_Incident_2023) |>
+  separate(occur_date, into = c("month", "day", "year"), sep = "/") |>
+  separate(occur_time, into = c("hour", "minute", "second"), sep = ":") |>
+  select(-minute, -second, -loc_of_occur_desc, -loc_classfctn_desc, -location_desc)
+```
+
+# plot
+
+### Regarding time and victimization:
+
+- Presents an analysis of the distribution of NYPD shooting incidents
+  across different time periods. The focus is on understanding when
+  these incidents are more likely to occur during the day.
+
+``` r
+#incidents rate against the time
+incidents_time = 
+  NYPD_Shooting_Incident_cleaned |>
+  mutate(hour = as.factor(hour)) |>
+  group_by(hour) |>
+  ggplot(aes(x = hour)) +
+  geom_bar() +
+  labs(x = "Time(hour)", y = "Incidents Numbers", title = "Incidents Distribution of Time Periods")
+incidents_time
+```
+
+![](report_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+- In this plot, each bar represents a specific hour, and the height of
+  the bar corresponds to the number of shooting incidents during that
+  hour. The x-axis represents the time (hour), and the y-axis represents
+  the count of incidents. From this plot, we can find that the majority
+  of shooting incidents occur during the night, with the highest
+  concentration observed between 21:00 and 23:00. Incidents are notably
+  fewer during the daytime, reaching the lowest point from 7:00 to 9:00
+  PM. Incident numbers gradually increase throughout the day, reaching a
+  peak during the late-night hours.
+
+### Regarding gender and victimization:
+
+- This plot delves into the gender distribution of shooting victims,
+  seeking to understand the gender disparities among individuals
+  impacted by shooting incidents.
+
+``` r
+#victim gender pie chart
+victim_gender = 
+  NYPD_Shooting_Incident_cleaned |>
+  group_by(vic_sex) |>
+  distinct(incident_key) |>
+  summarise(count = n()) |>
+  mutate(cumulative = cumsum(count),
+         label_position = cumulative - (0.5 * count)) |>
+  ggplot(aes(x = "", y = count, fill = vic_sex)) +
+  geom_bar(width = 1, stat = "identity") +
+  coord_polar("y", start = 0) +
+  theme_void() +
+  scale_fill_brewer(palette = "Dark2") +
+  labs(title = "Victim Gender Distribution")
+victim_gender 
+```
+
+![](report_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+- The plot reveals a substantial gender difference in victimization,
+  with a significantly higher number of male victims compared to female
+  victims. It effectively conveys the gender distribution, showcasing
+  the magnitude of victimization for each gender category.
+
+### Regarding age and victimization:
+
+- This plot investigates the age distribution of shooting victims,
+  aiming to identify patterns and disparities across different age
+  groups.
+
+``` r
+#victim age bar chart
+victim_age = 
+  NYPD_Shooting_Incident_cleaned |>
+  group_by(vic_age_group) |>
+  distinct(incident_key) |>
+  summarise(count = n()) |>
+  mutate(cumulative = cumsum(count),
+         label_position = cumulative - (0.5 * count)) |>
+  ggplot(aes(x = "", y = count, fill = vic_age_group)) +
+  geom_bar(width = 1, stat = "identity") +
+  coord_polar("y", start = 0) +
+  theme_void() +
+  scale_fill_brewer(palette = "Dark2") +
+    labs(title = "Age Distribution of Shooting Victims")
+```
+
+``` r
+victim_age
+```
+
+![](report_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+
+- The plot highlights a significant disparity in victimization among
+  various age groups.Victimization is notably concentrated among young
+  people, with the age group between 25 and 44 experiencing the highest
+  incidence of shooting incidents. There is an outlier at age 1022
+  observed in the dataset, and it may represent an anomaly or data entry
+  error.
+
+### Regarding region and victimization:
+
+- This plot examines the trends in shooting incidents over the years,
+  with a focus on different boroughs in New York City. The analysis
+  employs a line chart to visually represent the number of incidents in
+  each borough across multiple years.
+
+``` r
+#incidents vs. year, seperated by borough
+incidents_year = 
+  NYPD_Shooting_Incident_cleaned |>
+  group_by(year, boro) |>
+  summarise(count = n(), .groups = "drop") |>
+  ggplot(aes(x = year, y = count, group = boro, color = boro)) +
+  geom_line() +
+  facet_wrap(~boro) +
+  labs(
+    title = "Incidents vs Year",
+    x = "Year",
+    y = "Incidents"
+  )
+```
+
+``` r
+incidents_year
+```
+
+![](report_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+
+- The number of incidents in Bronx and Brooklyn has been maintained at a
+  high level every year. The overall situation of Manhattan and Queens
+  remains relatively low and stable. But all four borough showed
+  significant declines in 2018-2019, and bounced back in the following
+  year. Compared with other boroughs, Staten Island have the fewer
+  amount of the incidents. The density of data points in Staten Island
+  is significantly lower than in other regions.
+
+# Mapping
+
+### Mapping New York City
+
+- To provide a more detailed and focused view of New York City, specific
+  geographic limits were defined. The longitude and latitude boundaries
+  were set as follows: Longitude: -74.3 to -73.7; Latitude: 40.5 to
+  40.9. These limits were chosen to encompass the central area of New
+  York City, ensuring that the map primarily highlights the city itself.
+
+``` r
+# map
+new_york_map <- map_data("state", region = "new york")
+
+# Define limits to focus on New York City
+lon_min <- -74.3
+lon_max <- -73.7
+lat_min <- 40.5
+lat_max <- 40.9
+
+ggplot() +
+  geom_polygon(data = new_york_map, aes(x = long, y = lat, group = group), fill = "lightgray", color = "white") +
+  coord_fixed(ratio = 1, xlim = c(lon_min, lon_max), ylim = c(lat_min, lat_max)) +
+  labs(title = "Map of New York City")
+```
+
+![](report_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+- The maps generated are called “New York City Maps” and effectively
+  show the outlines of geographic areas with light gray fills and white
+  borders.
+
+### Mapping New York City with NYPD Shooting Incident Data
+
+``` r
+ggplot() +
+  geom_polygon(data = new_york_map, aes(x = long, y = lat, group = group), fill = "lightgray", color = "white") +
+  geom_point(data = NYPD_Shooting_Incident_cleaned, aes(x = longitude, y = latitude), color = "yellow") +
+  coord_fixed(ratio = 1, xlim = c(lon_min, lon_max), ylim = c(lat_min, lat_max)) +
+  labs(title = "Map of New York City with Data Points")
+```
+
+![](report_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+- The map that resulted, entitled “Map of New York City with Data
+  Points,” effective combines the geographic layout of the city with the
+  specific locations of the shootings. The light gray background
+  provides context for the map, while the yellow data points highlight
+  the spatial distribution of shootings in New York City.
+
+### Mapping Manhattan
+
+- In order to provide a detailed and centralized view of Manhattan, the
+  map defines specific geographic constraints. The longitude and
+  latitude boundaries are set as follows: Longitude: -74.0479 to
+  -73.79067; Latitude: 40.6829 to 40.8820. These boundaries cover all of
+  Manhattan, ensuring that the map primarily highlights the borough
+  itself.
+
+``` r
+# map for Manhattan
+manhattan_map <- map_data("state", region = "new york")
+
+lon_min <- -74.0479
+lon_max <- -73.79067
+lat_min <- 40.6829
+lat_max <- 40.8820
+
+ggplot() +
+  geom_polygon(data = manhattan_map, aes(x = long, y = lat, group = group), fill = "lightgray", color = "white") +
+  coord_fixed(ratio = 1, xlim = c(lon_min, lon_max), ylim = c(lat_min, lat_max)) +
+  labs(title = "Map of manhattan")
+```
+
+![](report_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+
+- Generates the “Manhattan Map” that effectively shows the outline of
+  the geographic area with a light gray fill and white border.
+
+### Mapping Manhattan with NYPD Shooting Incident Data
+
+``` r
+manhattan = 
+  NYPD_Shooting_Incident_cleaned |>
+  filter(boro == "MANHATTAN")
+
+ggplot() +
+  geom_polygon(data = manhattan_map, aes(x = long, y = lat, group = group), fill = "lightgray", color = "white") +
+  geom_point(data = manhattan, aes(x = longitude, y = latitude), color = "yellow") +
+  coord_fixed(ratio = 1, xlim = c(lon_min, lon_max), ylim = c(lat_min, lat_max)) +
+  labs(title = "Map of Manhattan with Incident Points")
+```
+
+![](report_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+
+- “Manhattan Map with Event Points” effectively combines the geographic
+  layout of Manhattan with the specific locations of shooting incidents.
+  A light gray background provides context for the map, while yellow
+  data points highlight the spatial distribution of shootings within the
+  borough.
+
+# Statistical Analysis
+
+### Seasonal Comparison of Shooting Incidents
+
+- This statistical analysis aims to investigate whether there are
+  significant differences in the mean number of shooting incidents
+  between the winter months (December, January, February) and the summer
+  months (June, July, August) in New York City.
+- Generated dataset `season`, visualized using bar graphs. x-axis
+  represents the season (winter, spring, summer, fall), and y-axis
+  represents the number of different shootings in each season. The bar
+  plot provides a visual representation of the distribution of shooting
+  incidents across different seasons.
+
+``` r
+season = 
+  NYPD_Shooting_Incident_cleaned |>
+  group_by(month) |>
+  distinct(incident_key) |>
+  summarise(count = n()) |>
+  mutate(season = case_match(
+    month,
+    "01" ~ "winter",
+    "02" ~ "winter",
+    "03" ~ "spring",
+    "04" ~ "spring",
+    "05" ~ "spring",
+    "06" ~ "summer",
+    "07" ~ "summer",
+    "08" ~ "summer",
+    "09" ~ "fall",
+    "10" ~ "fall",
+    "11" ~ "fall",
+    "12" ~ "winter",
+  )) 
+
+season |>
+  ggplot(aes(x = season, y = count)) +
+  geom_col()
+```
+
+![](report_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+
+- The largest gaps were found in the summer and winter seasons, which
+  were selected for subsequent analysis.
+
+``` r
+summer_winter = 
+  NYPD_Shooting_Incident_cleaned |>
+  group_by(month, year) |>
+  distinct(incident_key) |>
+  filter(!year == 2023) |>
+  summarise(count = n()) |>
+  mutate(season = case_match(
+    month,
+    "01" ~ "winter",
+    "02" ~ "winter",
+    "03" ~ "spring",
+    "04" ~ "spring",
+    "05" ~ "spring",
+    "06" ~ "summer",
+    "07" ~ "summer",
+    "08" ~ "summer",
+    "09" ~ "fall",
+    "10" ~ "fall",
+    "11" ~ "fall",
+    "12" ~ "winter",
+  )) |>
+  select(-year) |>
+  ungroup() |>
+  filter(season %in% c("winter", "summer"))
+```
+
+``` r
+summer = 
+  summer_winter |>
+  filter(season == "summer") |>
+  select(count)
+winter = 
+  summer_winter |>
+  filter(season == "winter") |>
+  select(count)
+summer_winter_after = 
+  bind_cols(summer, winter) |>
+  rename(summer = count...1,
+         winter = count...2)
+```
+
+- Summer-Winter Incident Comparison.
+
+Null Hypothesis (H0): There is no difference in mean incident numbers
+between summer and winter. Alternative Hypothesis (H1): The mean
+incident numbers between summer and winter are different. A two-sample
+z-test was conducted to compare the average of summer and winter
+shooting incidents.
+
+``` r
+z_test = z.test(x = summer_winter_after$summer, y = summer_winter_after$winter, sigma.x = sd(summer_winter_after$summer), sigma.y = sd(summer_winter_after$winter))
+z_test
+```
+
+    ## 
+    ##  Two-sample z-Test
+    ## 
+    ## data:  summer_winter_after$summer and summer_winter_after$winter
+    ## z = 9.4566, p-value < 2.2e-16
+    ## alternative hypothesis: true difference in means is not equal to 0
+    ## 95 percent confidence interval:
+    ##  48.79243 74.30561
+    ## sample estimates:
+    ## mean of x mean of y 
+    ## 140.58824  79.03922
+
+- z-test yielded the following results:
+
+Z value: 9.4566
+
+P-value: \< 2.2e-16 (very small, indicating strong evidence against the
+original hypothesis)
+
+Confidence interval: (48.79, 74.31)
+
+- The results of the z-test for both samples indicate that there is a
+  statistically significant difference between the average number of
+  shootings in the summer and winter. p-value is extremely small,
+  providing strong evidence against the original hypothesis. Means that
+  there is a large difference between the average number of shootings in
+  the summer and winter months.
+
+### Proportion of Male Shooting Victims in Brooklyn vs. Staten Island.
+
+- This statistical analysis aims to compare the proportion of male
+  shooting victims between the boroughs of Manhattan and Queens in New
+  York City. The goal is to investigate whether there is a significant
+  difference in the proportion of male victims between these two
+  boroughs.
+
+``` r
+prop_df = 
+  NYPD_Shooting_Incident_cleaned |>
+  select(boro, vic_sex) |>
+  group_by(boro, vic_sex) |>
+  summarize(sum = n())
+```
+
+    ## `summarise()` has grouped output by 'boro'. You can override using the
+    ## `.groups` argument.
+
+- Null Hypothesis (H0): The proportion of male shooting victims in
+  Brooklyn is equal to the proportion in Staten Island. Alternative
+  Hypothesis (H1): The proportions of male shooting victims in Brooklyn
+  and Staten Island are different. Use a two-sample test for equality of
+  proportions with continuity correction to compare the proportions of
+  male shooting victims in Brooklyn and Staten Island.
+
+``` r
+num_brook = 
+  prop_df |>
+  filter(boro == "BROOKLYN")
+
+num_SI = 
+  prop_df |>
+  filter(boro == "STATEN ISLAND")
+
+num_brook = sum(pull(num_brook, sum))
+
+num_SI = sum(pull(num_SI, sum))
+
+num_brook_male =
+  prop_df |>
+  filter(boro == "BROOKLYN") |>
+  filter(vic_sex == "M") |>
+  pull(sum)
+
+num_SI_male =
+  prop_df |>
+  filter(boro == "STATEN ISLAND") |>
+  filter(vic_sex == "M") |>
+  pull(sum)
+
+prop.test(c(num_brook_male, num_SI_male), n = c(num_brook, num_SI))
+```
+
+    ## 
+    ##  2-sample test for equality of proportions with continuity correction
+    ## 
+    ## data:  c(num_brook_male, num_SI_male) out of c(num_brook, num_SI)
+    ## X-squared = 3.4568, df = 1, p-value = 0.06299
+    ## alternative hypothesis: two.sided
+    ## 95 percent confidence interval:
+    ##  -0.002741196  0.044648482
+    ## sample estimates:
+    ##    prop 1    prop 2 
+    ## 0.9024998 0.8815461
+
+- The test results indicate the following:
+
+X-squared Value: 3.4568
+
+Degrees of Freedom (df): 1
+
+P-Value: 0.06299
+
+Confidence Interval: (-0.0027, 0.0446)
+
+While the p-value is greater than the conventional significance level of
+0.05, suggesting that we do not have strong evidence against the null
+hypothesis. Indicate that the proportions of male victims in Brooklyn
+and Staten Island are likely to be similar.
