@@ -1,6 +1,9 @@
 ---
+title: "Prediction of Case Number"
 output: 
-  html_document
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
 ---
 
 # Import needed packages
@@ -52,25 +55,29 @@ First, we import the cleaned data into the environment, and grouped the data by 
 ```{r split_tseries}
 cases_ts =
   every_month |> 
-  pull(cases_number)|> 
+  pull(cases_number)|>
   ts(start = c(2006,1), frequency = 12)
 
 plot(cases_ts,
      main = "Shooting cases per month",
+     xlab = "Year",
      ylab = "Frequency")
 
 ## test model
-test_series = cases_ts |> tail(72)
+test_series = 
+  every_month |> 
+  filter(year>=2017) |> 
+  pull(cases_number)
 
 test_series = ts(test_series,start = c(2017,1), frequency = 12)
 
 ```
 
-After that, we draw the plot of the original data. It is clear that we can't recognize any upward or downward trend in the time series from the graphs. In order to make the model focused more on recent data points, we decided to reduce the training data. Hence the model would give more weight on the recent data rather than other distant data.
+After that, we draw the plot of the original data. It is clear that we can't recognize any upward or downward trend in the time series from the graphs. In order to make the model focused more on recent data points, we decided to reduce the training data. Hence，the model would give more weight on the recent data rather than other distant data.
 
 # Conducting the test
 
-```{r}
+```{r ljung_test}
 Box.test(test_series,type = "Ljung",lag = 6)
 ```
 
@@ -80,7 +87,7 @@ $H_{1}$: The data are not independently distributed; they exhibit serial correla
 
 Then, we need to reject the NULL hypothesis and concluded that the exhibit serial correlation, in other words, this series is not a white noise series and it includes some informations which we need. After that, we need to conduct Augmented Dickey-Fuller Test to to examine whether the series is a stationary time series or not. If the series is not stationary then the series is to be stabilized by difference.
 
-```{r}
+```{r stationary_test}
 aTSA::adf.test(test_series)
 ```
 
@@ -91,28 +98,26 @@ $H_1$:The time series does not have a unit root, implying that it is stationary.
 From the above test result, we can clear in the model of no drift and no trend, all the p-value is greater than the given alpha ($\alpha=0.05$), as a result, we have strong evidence to prove that this series does not have a unit root and concluded that it's a stationary series.
 
 
-```{r}
+```{r othdr_inform}
 
-acf(cases_ts, lag.max = 20)
-pacf(cases_ts)
-
+acf(test_series, lag.max = 20)
+pacf(test_series)
 
 decomposed = 
-  decompose(cases_ts,
+  decompose(test_series,
             type = "additive") 
 
 plot(decomposed)
 
-
 ```
 
-As the normal time-series prediction procedure requested, we also made the plot of autocorrelation function(ACF) and partial autocorrelation function(PACF) to help us know more about this series. What's more, we deceided to decomposed the series by additive method according to the existing feature to this series.
+As the normal time-series prediction procedure requested, we also made the plot of autocorrelation function(ACF) and partial autocorrelation function(PACF) to help us know more about this series. What's more, we deceided to decomposed the series by additive method according to the existing feature to this series. From the decomposed graph, we can clearly know that it has a strong seasonality which is periodic and generally regular and predictable changes that occur over a year. Compared to the period when we were undergoing the global pandemic of Covid-19(2020-2022), we can clearly see a downward trend in the number of cases.
 
 # Grid Research via For Loop
 
 After that, all of us prefer to use the Holtwinter to forecast the series which is a way to model three aspects of the time series: a typical value (average), a slope (trend) over time, and a cyclical repeating pattern (seasonality).
 
-As a result, we need to find out the best parameter for this model. Then, we wrote a function about building a model with different parameters and tried to evaluate the model validity by calculating the root of the mean of the squared errors between the predicted and observed/actual values. 
+As a result, we need to find out the best parameter for this model. Then, we wrote a function about building a model with different parameters and tried to evaluate the model validity by calculating the root of the mean of the squared errors between the predicted and actual values. 
 
 ```{r rmse_function}
 
@@ -120,8 +125,11 @@ holtwinters_rmse = function(alpha, beta, gamma, df) {
     fit = HoltWinters(df, alpha = alpha, beta = beta, gamma = gamma)
     forecast_values = forecast::forecast(fit, h = length(df))
     
-    actual_values = as.numeric(df)  
-    forecasted_values = as.numeric(forecast_values$mean)
+    actual_values = 
+      as.numeric(df)  
+    
+    forecasted_values = 
+      as.numeric(forecast_values$mean)
     
     rmse = sqrt(mean((actual_values - forecasted_values)^2, na.rm = TRUE))
     return(rmse)
@@ -131,13 +139,15 @@ holtwinters_rmse = function(alpha, beta, gamma, df) {
 
 ## Special Optimization About the Loop
 
-To make it easier, we use the `expand.grid` to list all the possible combinations in a data frame to reduce the loop layers. In this way, we can siginificantly improve the efficiency of this simulation process.
+To make it easier, we use the `expand.grid` to list all the possible combinations in a data frame to reduce the loop layers. In this way, we can siginificantly improve the efficiency of this simulation process. We also try to facilitate this idea from the grid research to find out the best parameter of alpha, beta and gamma with the step size of 0.1.
 
 ```{r loop}
-# Grid search for alpha, beta, and gamma with a step size of 0.1
+
 beta_range = gamma_range = seq(0, 1, 0.1)
 alpha_range = seq(.1,1,.1)
-param_combin = expand.grid(alpha = alpha_range, beta = beta_range, gamma = gamma_range)
+param_combin = expand.grid(alpha = alpha_range,
+                           beta = beta_range,
+                           gamma = gamma_range)
 
 best_params = NULL
 best_rmse = Inf
@@ -145,7 +155,10 @@ best_rmse = Inf
 for (i in 1:nrow(param_combin)) {
   
   params = param_combin[i, ]
-  rmse = holtwinters_rmse(params$alpha, params$beta, params$gamma, test_series)
+  rmse = holtwinters_rmse(params$alpha,
+                          params$beta,
+                          params$gamma,
+                          test_series)
   
   if (rmse < best_rmse) {
     best_rmse = rmse
@@ -154,20 +167,21 @@ for (i in 1:nrow(param_combin)) {
   
 }
 
-# Assuming best_params and best_rmse are your results
-print(sprintf("The best parameters of Holtwinters - Alpha: %.2f, Beta: %.2f, Gamma: %.2f",
-              best_params$alpha, 
-              best_params$beta, 
-              best_params$gamma))
+print(
+  sprintf("The best parameters of Holtwinters - Alpha: %.2f, Beta: %.2f, Gamma: %.2f",
+          best_params$alpha, 
+          best_params$beta, 
+          best_params$gamma))
 
-print(sprintf("Best RMSE: %.4f",
-              best_rmse))
+print(
+  sprintf("Best RMSE: %.4f",
+          best_rmse))
 
 ```
 
 # Using the Best Holtwinter Model to Predict
 
-Using the best parameter, we can make the prediction and plot the result.
+Using the best parameter, we can predict the number of cases for the next 12 months and plot the result.
 
 ```{r best_version_prediction}
 
@@ -185,11 +199,14 @@ HW_best_forward =
 
 plot(x= test_series,
      ylab = "Case Number of each month",
-     xlim = c(2017,2024),
+     xlim = c(2017,2025),
      ylim = range(0,HW_best_forward$upper[,2]))+
-  lines(HW_best$fitted[,1], col = "blue", lty = 2)+
-  lines(HW_best_forward$mean,lty=2, col = "red")+
-  lines(HW_best_forward$upper[,2],col = "orange")
+  lines(HW_best$fitted[,1],
+        col = "blue", lty = 2)+
+  lines(HW_best_forward$mean,
+        lty=2, col = "red")+
+  lines(HW_best_forward$upper[,2],
+        col = "orange")
 
 HW_best_forward |> 
   knitr::kable()
@@ -200,4 +217,4 @@ HW_best_forward |>
 
 As you can see from the above the graph, the original series is in the color of black. Then, the blue line is the fitted value by Holtwinter modeling. After that, the red line is the predicted value and the orange one is the the 95% upper limit of the prediction.
 
-According to the shape of this prediction, we can clearly know that the case number will rise from the start of the 2023 and peaks at the middle of the year. In such circumstance, we suggest that the police station should minimize the likelihood of shootings in the precinct by increasing the number of patrols and the number of patrols conducted.
+According to the shape of this prediction, we can clearly know that the case number will drop after September 2023 and peaks at the middle of next year considering seasonality. In such circumstance, we suggest that the police station should minimize the likelihood of shootings in the precinct by increasing the number of patrols and the number of patrols conducted before August of 2024.
