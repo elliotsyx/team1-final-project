@@ -12,6 +12,9 @@ library(ggmap)
 library(sf)
 library(BSDA)
 library(maps)
+library(tseries)
+library(aTSA)
+library(forecast)
 ```
 
 # Motivation
@@ -35,7 +38,9 @@ We choose the NYPD Shooting Incident Dataset as our main dataset in our study. T
 # Read shooting Incident from 2006 to 2022
 NYPD_Shooting_Incident_2006_2022 = 
   read_csv("data/NYPD_Shooting_Incident_Data__Historic_.csv") |>
-  janitor::clean_names() 
+  janitor::clean_names() |>
+  select(-lon_lat,
+         -statistical_murder_flag)
 ```
 
 There are a total of 21 variables. 
@@ -86,7 +91,77 @@ NYPD_Shooting_Incident_cleaned =
   select(-minute, -second, -loc_of_occur_desc, -loc_classfctn_desc, -location_desc)
 ```
 
-# plot
+# Mapping
+
+### Mapping New York City
+* To provide a more detailed and focused view of New York City, specific geographic limits were defined. The longitude and latitude boundaries were set as follows: Longitude: -74.3 to -73.7; Latitude: 40.5 to 40.9. These limits were chosen to encompass the central area of New York City, ensuring that the map primarily highlights the city itself. 
+
+```{r}
+# map
+new_york_map <- map_data("state", region = "new york")
+
+# Define limits to focus on New York City
+lon_min <- -74.3
+lon_max <- -73.7
+lat_min <- 40.5
+lat_max <- 40.9
+
+ggplot() +
+  geom_polygon(data = new_york_map, aes(x = long, y = lat, group = group), fill = "lightgray", color = "white") +
+  coord_fixed(ratio = 1, xlim = c(lon_min, lon_max), ylim = c(lat_min, lat_max)) +
+  labs(title = "Map of New York City")
+```
+
+* The maps generated are called "New York City Maps" and effectively show the outlines of geographic areas with light gray fills and white borders.
+
+### Mapping New York City with NYPD Shooting Incident Data
+```{r, warning=FALSE}
+ggplot() +
+  geom_polygon(data = new_york_map, aes(x = long, y = lat, group = group), fill = "lightgray", color = "white") +
+  geom_point(data = NYPD_Shooting_Incident_cleaned, aes(x = longitude, y = latitude), color = "yellow") +
+  coord_fixed(ratio = 1, xlim = c(lon_min, lon_max), ylim = c(lat_min, lat_max)) +
+  labs(title = "Map of New York City with Data Points")
+```
+
+* The map that resulted, entitled "Map of New York City with Data Points," effective combines the geographic layout of the city with the specific locations of the shootings. The light gray background provides context for the map, while the yellow data points highlight the spatial distribution of shootings in New York City.
+
+###  Mapping Manhattan
+* In order to provide a detailed and centralized view of Manhattan, the map defines specific geographic constraints. The longitude and latitude boundaries are set as follows: Longitude: -74.0479 to -73.79067; Latitude: 40.6829 to 40.8820. These boundaries cover all of Manhattan, ensuring that the map primarily highlights the borough itself. 
+
+```{r}
+# map for Manhattan
+manhattan_map <- map_data("state", region = "new york")
+
+lon_min <- -74.0479
+lon_max <- -73.79067
+lat_min <- 40.6829
+lat_max <- 40.8820
+
+ggplot() +
+  geom_polygon(data = manhattan_map, aes(x = long, y = lat, group = group), fill = "lightgray", color = "white") +
+  coord_fixed(ratio = 1, xlim = c(lon_min, lon_max), ylim = c(lat_min, lat_max)) +
+  labs(title = "Map of manhattan")
+```
+
+* Generates the "Manhattan Map" that effectively shows the outline of the geographic area with a light gray fill and white border.
+
+### Mapping Manhattan with NYPD Shooting Incident Data
+```{r, warning=FALSE}
+manhattan = 
+  NYPD_Shooting_Incident_cleaned |>
+  filter(boro == "MANHATTAN")
+
+ggplot() +
+  geom_polygon(data = manhattan_map, aes(x = long, y = lat, group = group), fill = "lightgray", color = "white") +
+  geom_point(data = manhattan, aes(x = longitude, y = latitude), color = "yellow") +
+  coord_fixed(ratio = 1, xlim = c(lon_min, lon_max), ylim = c(lat_min, lat_max)) +
+  labs(title = "Map of Manhattan with Incident Points")
+```
+
+* "Manhattan Map with Event Points" effectively combines the geographic layout of Manhattan with the specific locations of shooting incidents. A light gray background provides context for the map, while yellow data points highlight the spatial distribution of shootings within the borough.
+
+
+# Exploratory Analysis
 
 ###  Regarding time and victimization:
 
@@ -175,81 +250,12 @@ incidents_year
 
 * The number of incidents in Bronx and Brooklyn has been maintained at a high level every year. The overall situation of Manhattan and Queens remains relatively low and stable. But all four borough showed significant declines in 2018-2019, and bounced back in the following year. Compared with other boroughs, Staten Island have the fewer amount of the incidents. The density of data points in Staten Island is significantly lower than in other regions. 
 
-# Mapping
-
-### Mapping New York City
-* To provide a more detailed and focused view of New York City, specific geographic limits were defined. The longitude and latitude boundaries were set as follows: Longitude: -74.3 to -73.7; Latitude: 40.5 to 40.9. These limits were chosen to encompass the central area of New York City, ensuring that the map primarily highlights the city itself. 
-
-```{r}
-# map
-new_york_map <- map_data("state", region = "new york")
-
-# Define limits to focus on New York City
-lon_min <- -74.3
-lon_max <- -73.7
-lat_min <- 40.5
-lat_max <- 40.9
-
-ggplot() +
-  geom_polygon(data = new_york_map, aes(x = long, y = lat, group = group), fill = "lightgray", color = "white") +
-  coord_fixed(ratio = 1, xlim = c(lon_min, lon_max), ylim = c(lat_min, lat_max)) +
-  labs(title = "Map of New York City")
-```
-
-* The maps generated are called "New York City Maps" and effectively show the outlines of geographic areas with light gray fills and white borders.
-
-### Mapping New York City with NYPD Shooting Incident Data
-```{r, warning=FALSE}
-ggplot() +
-  geom_polygon(data = new_york_map, aes(x = long, y = lat, group = group), fill = "lightgray", color = "white") +
-  geom_point(data = NYPD_Shooting_Incident_cleaned, aes(x = longitude, y = latitude), color = "yellow") +
-  coord_fixed(ratio = 1, xlim = c(lon_min, lon_max), ylim = c(lat_min, lat_max)) +
-  labs(title = "Map of New York City with Data Points")
-```
-
-* The map that resulted, entitled "Map of New York City with Data Points," effective combines the geographic layout of the city with the specific locations of the shootings. The light gray background provides context for the map, while the yellow data points highlight the spatial distribution of shootings in New York City.
-
-###  Mapping Manhattan
-* In order to provide a detailed and centralized view of Manhattan, the map defines specific geographic constraints. The longitude and latitude boundaries are set as follows: Longitude: -74.0479 to -73.79067; Latitude: 40.6829 to 40.8820. These boundaries cover all of Manhattan, ensuring that the map primarily highlights the borough itself. 
-
-```{r}
-# map for Manhattan
-manhattan_map <- map_data("state", region = "new york")
-
-lon_min <- -74.0479
-lon_max <- -73.79067
-lat_min <- 40.6829
-lat_max <- 40.8820
-
-ggplot() +
-  geom_polygon(data = manhattan_map, aes(x = long, y = lat, group = group), fill = "lightgray", color = "white") +
-  coord_fixed(ratio = 1, xlim = c(lon_min, lon_max), ylim = c(lat_min, lat_max)) +
-  labs(title = "Map of manhattan")
-```
-
-* Generates the "Manhattan Map" that effectively shows the outline of the geographic area with a light gray fill and white border.
-
-### Mapping Manhattan with NYPD Shooting Incident Data
-```{r, warning=FALSE}
-manhattan = 
-  NYPD_Shooting_Incident_cleaned |>
-  filter(boro == "MANHATTAN")
-
-ggplot() +
-  geom_polygon(data = manhattan_map, aes(x = long, y = lat, group = group), fill = "lightgray", color = "white") +
-  geom_point(data = manhattan, aes(x = longitude, y = latitude), color = "yellow") +
-  coord_fixed(ratio = 1, xlim = c(lon_min, lon_max), ylim = c(lat_min, lat_max)) +
-  labs(title = "Map of Manhattan with Incident Points")
-```
-
-* "Manhattan Map with Event Points" effectively combines the geographic layout of Manhattan with the specific locations of shooting incidents. A light gray background provides context for the map, while yellow data points highlight the spatial distribution of shootings within the borough.
-
 # Statistical Analysis
 
 ### Seasonal Comparison of Shooting Incidents
 
-* This statistical analysis aims to investigate whether there are significant differences in the mean number of shooting incidents between the winter months (December, January, February) and the summer months (June, July, August) in New York City. 
-* Generated dataset `season`, visualized using bar graphs. x-axis represents the season (winter, spring, summer, fall), and y-axis represents the number of different shootings in each season. The bar plot provides a visual representation of the distribution of shooting incidents across different seasons. 
+* This statistical analysis aims to investigate whether there are significant differences in the mean number of shooting incidents between seaspns in New York City. 
+* Visualized using bar graphs, the x-axis represents the season (winter, spring, summer, fall), and y-axis represents the number of different shootings in each season. The bar plot provides a visual representation of the distribution of shooting incidents across different seasons. 
 ```{r}
 season = 
   NYPD_Shooting_Incident_cleaned |>
@@ -394,4 +400,199 @@ Confidence Interval: (-0.0027, 0.0446)
 While the p-value is greater than the conventional significance level of 0.05, suggesting that we do not have strong evidence against the null hypothesis. Indicate that the proportions of male victims in Brooklyn and Staten Island are likely to be similar.
 
 
+# Additional analysis
 
+### Data Processing
+* First, we import the cleaned data into the environment, and grouped the data by year and month. After that, we count the case number of each month and would like to find out that is there any serial autocorrelation. To predict the future data, we still need to conduct some test about the original data.
+
+```{r summarize, warning=FALSE}
+
+every_month = 
+  NYPD_Shooting_Incident_cleaned |> 
+  group_by(year,month) |> 
+  summarize(cases_number = n())
+
+```
+
+* After that, we draw the plot of the original data. It is clear that we can't recognize any upward or downward trend in the time series from the graphs. In order to make the model focused more on recent data points, we decided to reduce the training data. Hence，the model would give more weight on the recent data rather than other distant data.
+
+```{r split_tseries}
+cases_ts =
+  every_month |> 
+  pull(cases_number)|>
+  ts(start = c(2006,1), frequency = 12)
+
+plot(cases_ts,
+     main = "Shooting cases per month",
+     xlab = "Year",
+     ylab = "Frequency")
+
+## test model
+test_series = 
+  every_month |> 
+  filter(year>=2017) |> 
+  pull(cases_number)
+
+test_series = ts(test_series,start = c(2017,1), frequency = 12)
+
+```
+
+### Conducting the test
+* $H_{0}$: The data are independently distributed (i.e. the correlations in the population from which the sample is taken are 0, so that any observed correlations in the data result from randomness of the sampling process).
+
+$H_{1}$: The data are not independently distributed; they exhibit serial correlation.
+
+```{r ljung_test}
+Box.test(test_series,type = "Ljung",lag = 6)
+```
+
+* Then, we need to reject the NULL hypothesis and concluded that the exhibit serial correlation, in other words, this series is not a white noise series and it includes some informations which we need. After that, we need to conduct Augmented Dickey-Fuller Test to to examine whether the series is a stationary time series or not. If the series is not stationary then the series is to be stabilized by difference.
+
+* $H_0$:The time series has a unit root, implying that it is non-stationary.
+
+$H_1$:The time series does not have a unit root, implying that it is stationary.
+
+```{r stationary_test}
+aTSA::adf.test(test_series)
+```
+
+* From the above test result, we can clear in the model of no drift and no trend, all the p-value is greater than the given alpha ($\alpha=0.05$), as a result, we have strong evidence to prove that this series does not have a unit root and concluded that it's a stationary series.
+
+```{r othdr_inform}
+
+acf(test_series, lag.max = 20)
+pacf(test_series)
+
+decomposed = 
+  decompose(test_series,
+            type = "additive") 
+
+plot(decomposed)
+
+```
+
+* As the normal time-series prediction procedure requested, we also made the plot of autocorrelation function(ACF) and partial autocorrelation function(PACF) to help us know more about this series. What's more, we deceided to decomposed the series by additive method according to the existing feature to this series. From the decomposed graph, we can clearly know that it has a strong seasonality which is periodic and generally regular and predictable changes that occur over a year. Compared to the period when we were undergoing the global pandemic of Covid-19(2020-2022), we can clearly see a downward trend in the number of cases.
+
+### Grid Research via For Loop
+
+* After that, all of us prefer to use the Holtwinter to forecast the series which is a way to model three aspects of the time series: a typical value (average), a slope (trend) over time, and a cyclical repeating pattern (seasonality).
+
+As a result, we need to find out the best parameter for this model. Then, we wrote a function about building a model with different parameters and tried to evaluate the model validity by calculating the root of the mean of the squared errors between the predicted and actual values. 
+
+```{r rmse_function}
+
+holtwinters_rmse = function(alpha, beta, gamma, df) {
+    fit = HoltWinters(df, alpha = alpha, beta = beta, gamma = gamma)
+    forecast_values = forecast::forecast(fit, h = length(df))
+    
+    actual_values = 
+      as.numeric(df)  
+    
+    forecasted_values = 
+      as.numeric(forecast_values$mean)
+    
+    rmse = sqrt(mean((actual_values - forecasted_values)^2, na.rm = TRUE))
+    return(rmse)
+}
+
+```
+
+#### Special Optimization About the Loop
+
+* To make it easier, we use the `expand.grid` to list all the possible combinations in a data frame to reduce the loop layers. In this way, we can siginificantly improve the efficiency of this simulation process. We also try to facilitate this idea from the grid research to find out the best parameter of alpha, beta and gamma with the step size of 0.1.
+
+```{r loop}
+
+beta_range = gamma_range = seq(0, 1, 0.1)
+alpha_range = seq(.1,1,.1)
+param_combin = expand.grid(alpha = alpha_range,
+                           beta = beta_range,
+                           gamma = gamma_range)
+
+best_params = NULL
+best_rmse = Inf
+
+for (i in 1:nrow(param_combin)) {
+  
+  params = param_combin[i, ]
+  rmse = holtwinters_rmse(params$alpha,
+                          params$beta,
+                          params$gamma,
+                          test_series)
+  
+  if (rmse < best_rmse) {
+    best_rmse = rmse
+    best_params = params
+  }
+  
+}
+
+print(
+  sprintf("The best parameters of Holtwinters - Alpha: %.2f, Beta: %.2f, Gamma: %.2f",
+          best_params$alpha, 
+          best_params$beta, 
+          best_params$gamma))
+
+print(
+  sprintf("Best RMSE: %.4f",
+          best_rmse))
+
+```
+
+### Using the Best Holtwinter Model to Predict
+
+* Using the best parameter, we can predict the number of cases for the next 12 months and plot the result.
+
+```{r best_version_prediction}
+
+HW_best =  
+  HoltWinters(test_series,
+              alpha = pull(best_params , alpha),
+              beta = pull(best_params , beta),
+              gamma = pull(best_params , gamma))
+
+HW_fitted = as.data.frame(fitted(HW_best))
+
+HW_best_forward = 
+  forecast(HW_best, h = 12) |> 
+  janitor::clean_names()
+
+plot(x= test_series,
+     ylab = "Case Number of each month",
+     xlim = c(2017,2025),
+     ylim = range(0,HW_best_forward$upper[,2]))+
+  lines(HW_best$fitted[,1],
+        col = "blue", lty = 2)+
+  lines(HW_best_forward$mean,
+        lty=2, col = "red")+
+  lines(HW_best_forward$upper[,2],
+        col = "orange")
+
+HW_best_forward |> 
+  knitr::kable()
+  
+```
+
+### Comment
+
+* As you can see from the above the graph, the original series is in the color of black. Then, the blue line is the fitted value by Holtwinter modeling. After that, the red line is the predicted value and the orange one is the the 95% upper limit of the prediction.
+
+According to the shape of this prediction, we can clearly know that the case number will drop after September 2023 and peaks at the middle of next year considering seasonality. In such circumstance, we suggest that the police station should minimize the likelihood of shootings in the precinct by increasing the number of patrols and the number of patrols conducted before August of 2024.
+
+# Discussion
+
+### Temporal Patterns and Victim Demographics
+* Strengths:
+The analysis of shooting incidents over time reveals a concentration during nighttime hours, with the peak occurring between 21:00 and 23:00. The examination of gender and age distribution among victims highlights the disproportionate impact on young individuals, particularly those between the ages of 25 and 44. Understanding these demographics can aid in targeted prevention and intervention strategies.
+
+* Limitations:
+The dataset might be subject to reporting biases or underreporting, affecting the accuracy of temporal patterns and demographic insights. It is crucial to consider potential discrepancies in reporting practices across different regions or time periods. The presence of outliers, such as the age group "1022," needs further investigation. Anomaly detection and data cleaning techniques should be applied to ensure the reliability of demographic insights.
+
+### Geographic Distribution and Mapping
+* Strengths:
+The visual representation of shooting incidents on maps provides a clear understanding of the spatial distribution. The focus on both New York City and Manhattan allows for targeted interventions in high-risk areas. The analysis of shooting incidents across different boroughs reveals variations in trends. This information can guide law enforcement agencies and policymakers in implementing borough-specific strategies.
+
+*Limitations:
+The dataset's geographic coordinates might not capture fine-grained details, such as specific neighborhoods or block-level information. High-resolution mapping could enhance the precision of spatial analyses. While geographic analysis identifies areas with high incident rates, it does not establish causation. Additional factors, such as socio-economic conditions and community dynamics, should be considered for a comprehensive understanding.
+
+### Prediciton？
