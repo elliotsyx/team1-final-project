@@ -103,22 +103,30 @@ for increased awareness and preventive measures within educational
 institutions. Many schools are tasked with ensuring the safety of their
 students, making it essential to address and mitigate potential threats.
 
-Additionally, the safety and satisfaction of tourists and fair labor
-conditions for employees are key factors in maintaining the appeal of
-destinations like New York City. People choosing NYC as their
-destination are often motivated by the city’s diverse opportunities,
-which include education, employment, and cultural experiences. Overall,
-the motivation to address these interconnected issues lies in the shared
-goal of creating safer, more vibrant communities and environments for
-individuals to thrive.
+Shootings in schools are not an isolated problem. It affects the entire
+school community, and its impact extends beyond the individual case of
+New York University to include educational institutions and industries
+throughout the New York area. Beyond the school gates, shootings cast a
+shadow over the workplace, impacting employee safety and productivity.
+Shootings instill fear in employees and negatively impact the overall
+workplace culture. Addressing the root of the problem is critical to
+maintaining a thriving workforce. Other public spaces and cultural
+venues are an important part of New York and are not immune to the
+threat of gun violence. Concert halls, theaters, and recreational areas
+have all become potential targets. Protecting these spaces requires a
+collective commitment to implementing safety measures, promoting
+community engagement, and addressing the social factors that contribute
+to violence. Overall, the motivation to address these interconnected
+issues lies in the shared goal of creating safer, more vibrant
+communities and environments for individuals to thrive.
 
-# Initial Questions ?
+# Initial Questions
 
 - 1.  Are shootings affected by seasonal differences?
 
 - 2.  Do male victimization rates vary by region?
 
-- 3.  ？
+- 3.  What will be the trend in the future of shooting incident?
 
 # Data sources:
 
@@ -978,40 +986,35 @@ conducted before August of 2024.
 
 # Discussion
 
-### Temporal Patterns and Victim Demographics
-
-- Strengths: The analysis of shooting incidents over time reveals a
-  concentration during nighttime hours, with the peak occurring between
-  21:00 and 23:00. The examination of gender and age distribution among
-  victims highlights the disproportionate impact on young individuals,
+- At first, we explored the temporal patterns and victim demographics.
+  The analysis of shooting incidents over time reveals a concentration
+  during nighttime hours, with the peak occurring between 21:00 and
+  23:00. The examination of gender and age distribution among victims
+  highlights the disproportionate impact on young individuals,
   particularly those between the ages of 25 and 44. Understanding these
   demographics can aid in targeted prevention and intervention
-  strategies.
+  strategies. To visualize the data, we processed the data for
+  geographic distribution and mapping. The visual representation of
+  shooting incidents on maps provides a clear understanding of the
+  spatial distribution. The focus on both New York City and Manhattan
+  allows for targeted interventions in high-risk areas. The analysis of
+  shooting incidents across different boroughs reveals variations in
+  trends. This information can guide law enforcement agencies and
+  policymakers in implementing borough-specific strategies.
 
-- Limitations: The dataset might be subject to reporting biases or
+# Limitations
+
+- The dataset we used might be subject to reporting biases or
   underreporting, affecting the accuracy of temporal patterns and
   demographic insights. It is crucial to consider potential
   discrepancies in reporting practices across different regions or time
   periods. The presence of outliers, such as the age group “1022,” needs
   further investigation. Anomaly detection and data cleaning techniques
   should be applied to ensure the reliability of demographic insights.
-
-### Geographic Distribution and Mapping
-
-- Strengths: The visual representation of shooting incidents on maps
-  provides a clear understanding of the spatial distribution. The focus
-  on both New York City and Manhattan allows for targeted interventions
-  in high-risk areas. The analysis of shooting incidents across
-  different boroughs reveals variations in trends. This information can
-  guide law enforcement agencies and policymakers in implementing
-  borough-specific strategies.
-
-\*Limitations: The dataset’s geographic coordinates might not capture
-fine-grained details, such as specific neighborhoods or block-level
-information. High-resolution mapping could enhance the precision of
-spatial analyses. While geographic analysis identifies areas with high
-incident rates, it does not establish causation. Additional factors,
-such as socio-economic conditions and community dynamics, should be
-considered for a comprehensive understanding.
-
-### Prediciton？
+  Also, the dataset’s geographic coordinates might not capture
+  fine-grained details, such as specific neighborhoods or block-level
+  information. High-resolution mapping could enhance the precision of
+  spatial analyses. While geographic analysis identifies areas with high
+  incident rates, it does not establish causation. Additional factors,
+  such as socio-economic conditions and community dynamics, should be
+  considered for a comprehensive understanding.
